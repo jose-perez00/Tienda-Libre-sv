@@ -1,0 +1,147 @@
+/* --- Contenedor de la Galería Principal --- */
+.main-img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background-color: #f8fafc;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.main-gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease-in-out;
+}
+
+/* --- Flechas de Navegación Elegantes --- */
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 1.1rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    z-index: 5;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.nav-arrow:hover {
+    background: rgba(15, 23, 42, 0.85);
+    transform: translateY(-50%) scale(1.08);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-arrow:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.prev-arrow {
+    left: 12px;
+}
+
+.next-arrow {
+    right: 12px;
+}
+
+/* Ocultar flechas de forma limpia */
+.nav-arrow.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-50%) scale(0.8);
+    transition: all 0.2s ease;
+}
+/* --- Ajustes responsive de la ventana "Ver Detalles" (móvil) --- */
+/* Este archivo se carga después del <style> de catalogo.html, por lo que     */
+/* estas reglas deben ir al final para no ser sobrescritas en pantallas       */
+/* pequeñas. Sin ellas, la imagen se expandía y empujaba el contenido fuera   */
+/* del modal.                                                                 */
+/* Importante: en móvil SOLO el overlay (.modal-overlay) hace scroll. Antes   */
+/* el .modal-content también tenía su propio scroll y eso creaba dos zonas de */
+/* scroll anidadas: al deslizar el dedo, el gesto se quedaba atrapado en la   */
+/* zona interna y no se alcanzaban los botones (WhatsApp, carrito, etc.) ni   */
+/* las miniaturas.                                                            */
+@media (max-width: 700px) {
+    .modal-overlay {
+        align-items: flex-start;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0.75rem;
+    }
+    .modal-content {
+        max-height: none;
+        height: auto;
+        overflow: visible;
+        /* No estirar al alto del overlay: se ancla arriba a su altura natural. */
+        align-self: flex-start;
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding-bottom: 1.5rem;
+    }
+    .seller-box {
+        margin-top: 0.75rem;
+    }
+    /* La imagen se limita para que título, precio y botones queden visibles
+       en la misma pantalla, sin tener que desplazarse. */
+    .main-img-wrapper {
+        height: min(38vh, 300px);
+    }
+    .main-gallery-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .detail-info {
+        gap: 0.65rem;
+    }
+    .nav-arrow {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+    .prev-arrow { left: 8px; }
+    .next-arrow { right: 8px; }
+    .thumb-img {
+        width: 52px;
+        height: 52px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-overlay {
+        padding: 0.5rem;
+    }
+    .modal-content {
+        padding: 1.9rem 0.95rem 1.4rem;
+        gap: 0.7rem;
+    }
+    .main-img-wrapper {
+        height: min(32vh, 240px);
+    }
+    .detail-title { font-size: 1.2rem; }
+    .detail-price { font-size: 1.35rem; }
+    .detail-info {
+        gap: 0.55rem;
+    }
+}

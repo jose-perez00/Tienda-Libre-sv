@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Carrito de Compras - Tienda Libre</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden; /* Evita el desplazamiento horizontal en pantallas pequeñas */
+        }
+
+        /* Campos adaptables; 16px en móvil evita el zoom automático en iOS. */
+        input, select, textarea, button {
+            max-width: 100%;
+            font-family: inherit;
+        }
+
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        header {
+            width: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.62)), url('../banner/banner2.gif');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            display: block;
+            height: 90px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 700;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        /* Botón "Salir": cierra la página/aplicación si el usuario lo desea. */
+        .btn-salir { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.4rem 0.9rem; background-color: #6b7280; color: #fff; border: none; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 0.95rem; cursor: pointer; white-space: nowrap; }
+        .btn-salir:hover { background-color: #4b5563; }
+
+        .btn-sell {
+            background-color: #10b981;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .btn-sell:hover {
+            background-color: #059669 !important;
+        }
+
+        .cart-container {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 2rem;
+        }
+
+        .cart-grid {
+            display: grid;
+            /* minmax(0, …) deja que las columnas se encojan: sin esto, la tabla
+               ancha estira la columna y desborda la página en el móvil. */
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            gap: 2rem;
+        }
+
+        .cart-products,
+        .checkout-summary {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .cart-products { padding: 2rem; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { color: #4b5563; font-size: 0.95rem; }
+        td { color: #1f2937; }
+        .product-cell { display: grid; grid-template-columns: 60px minmax(140px, 1fr); align-items: center; gap: 0.5rem 0.75rem; }
+        .product-cell img { grid-column: 1; grid-row: 1 / span 2; width: 60px; height: 60px; object-fit: cover; border-radius: 8px; background: #f3f4f6; }
+        .product-cell strong, .product-cell small { grid-column: 2; overflow-wrap: anywhere; }
+        .product-cell small { color: #6b7280; }
+        .btn-remove-item { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 6px; padding: 0.45rem 0.75rem; cursor: pointer; font-weight: 600; }
+        .btn-remove-item:hover { background: #fecaca; }
+        .cart-empty-state { text-align: center; color: #6b7280; padding: 1.5rem; }
+        .checkout-summary { padding: 2rem; height: fit-content; }
+        .summary-title { font-size: 1.25rem; color: #1f2937; margin-bottom: 1rem; border-bottom: 2px solid #f3f4f6; padding-bottom: 0.5rem; }
+        .summary-row, .summary-total { display: flex; justify-content: space-between; margin-bottom: 1rem; color: #4b5563; }
+        .summary-total { font-size: 1.25rem; font-weight: bold; color: #1f2937; border-top: 2px solid #f3f4f6; padding-top: 1rem; }
+
+        .seller-scanner { margin-bottom:1.25rem; padding:1rem; border:1px solid #e5e7eb; border-radius:8px; background:#f8fafc; }
+        .scanner-row { display:flex; gap:.5rem; margin-top:.5rem; }
+        .scanner-row input { flex:1; min-width:0; padding:.7rem; border:1px solid #cbd5e1; border-radius:6px; }
+        .scanner-row button { padding:.7rem 1rem; border:0; border-radius:6px; background:#2563eb; color:white; font-weight:bold; cursor:pointer; }
+        .seller-scanner:has(input:disabled) { opacity:.58; }
+        .invoice-actions { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1.5rem; }
+        .btn-invoice { border:0; border-radius:6px; padding:.75rem 1rem; background:#2563eb; color:#fff; font-weight:700; cursor:pointer; }
+        .btn-invoice:hover { filter:brightness(.92); }
+        .btn-back { background:#64748b; }
+        @media print { body * { visibility:hidden; } #invoiceContainer, #invoiceContainer * { visibility:visible; } #invoiceContainer { position:absolute; inset:0; width:100%; margin:0; box-shadow:none; } .no-print { display:none !important; } }
+        .payment-section, .invoice-container { margin-top: 2rem; padding: 2rem; background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,.05); }
+        .access-notice { margin: 0 0 1rem; color: #92400e; background: #fffbeb; padding: .75rem; border-radius: 6px; }
+        fieldset { border: 0; padding: 0; }
+        fieldset:disabled { opacity: .58; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display:block; margin-bottom:.4rem; font-weight:600; }
+        .form-group input, .form-group select { width:100%; padding:.75rem; border:1px solid #d1d5db; border-radius:6px; font-size:1rem; }
+        .btn-checkout { padding:.85rem 1.2rem; border:0; border-radius:6px; background:#2563eb; color:white; font-weight:bold; cursor:pointer; }
+        .btn-checkout:disabled { background:#9ca3af; cursor:not-allowed; }
+        .invoice-container[hidden] { display:none; }
+        .invoice-details { margin: 1.5rem 0; }
+        @media(max-width:650px){ .form-grid { grid-template-columns:1fr; } }
+
+        footer {
+            background-color: #1f2937;
+            color: #9ca3af;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) { .cart-grid { grid-template-columns: minmax(0, 1fr); } }
+        @media (max-width: 700px) {
+            header .nav-container { flex-direction: column; align-items: flex-start; gap: .5rem; padding: .75rem .6rem; }
+            header .logo { align-self: flex-start; }
+            header .logo img { height: 72px; }
+            /* Menú deslizable, elegante: borde redondeado con relieve y sombra. */
+            header .nav-links {
+                width: 100%; justify-content: flex-start; flex-wrap: nowrap;
+                gap: .35rem; font-size: .9rem;
+                overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+                padding: 0.35rem 0.45rem;
+                background: rgba(255, 255, 255, 0.55);
+                border: 1px solid rgba(255, 255, 255, 0.75);
+                border-radius: 12px;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -2px 4px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.08);
+            }
+            header .nav-links::-webkit-scrollbar { display: none; }
+            header .nav-links li { flex: 0 0 auto; }
+            header .nav-links a {
+                display: inline-flex; align-items: center; min-height: 42px; white-space: nowrap;
+                padding: 0 0.7rem; border-radius: 9px; transition: background .2s, color .2s;
+            }
+            header .nav-links a:hover { background: rgba(37, 99, 235, 0.1); }
+            header .btn-sell { padding: .35rem .6rem; }
+            .cart-container { margin: 1.5rem auto; padding: 0 1rem; }
+            .cart-products, .checkout-summary, .payment-section, .invoice-container { padding: 1rem; min-width: 0; }
+            .cart-products { overflow-x: auto; }
+            .cart-products table { min-width: 620px; }
+            .invoice-container { overflow-x: auto; }
+            .invoice-container table { min-width: 520px; }
+            .invoice-actions { display: grid; grid-template-columns: 1fr 1fr; }
+            .btn-invoice { min-height: 48px; padding: .65rem .5rem; }
+            .btn-checkout { width: 100%; min-height: 48px; }
+            .btn-remove-item { min-height: 40px; }
+        }
+        @media (max-width: 420px) {
+            header .nav-links { gap: .2rem .45rem; font-size: .82rem; }
+            header .btn-sell { padding: .3rem .5rem; }
+            h1 { font-size: 1.6rem; }
+            .invoice-actions { grid-template-columns: 1fr; }
+            .scanner-row { flex-direction: column; }
+            .scanner-row button { min-height: 44px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="no-print">
+        <nav class="nav-container">
+            <a href="../index.html" class="logo" aria-label="Tienda Libre SV - Inicio">
+                <img src="../banner/LOGO1.png" alt="Tienda Libre SV">
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="carrito.html" id="cartCounter">Carrito (<span id="cart-count">0</span>)</a></li>
+                <li><a href="vender.html" class="btn-sell">Vender un producto</a></li>
+                <li><button type="button" class="btn-salir" onclick="salirApp(event)" aria-label="Salir de la aplicación">Salir</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="cart-container">
+        <h1>Tu Carrito de Compras</h1>
+
+        <div id="proceso-compra-wrapper">
+            <div class="cart-grid">
+                <div class="cart-products">
+                    <div class="seller-scanner"><label for="codigoEscaneado"><strong>Agregar producto por código de barras</strong></label><div class="scanner-row"><input id="codigoEscaneado" type="text" placeholder="Escanea o escribe el código" disabled><button id="btnAgregarEscaneado" type="button" disabled>Agregar</button></div><p id="estadoEscaneo" role="status"></p></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="checkout-summary">
+                    <h3 class="summary-title">Resumen de Orden</h3>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="summarySubtotal">$0.00</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total a Pagar</span>
+                        <span id="summaryTotal">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <section class="payment-section" id="sellerCheckout">
+                <h3 class="summary-title">Datos de compra y facturación</h3>
+                <p id="sellerAccessNotice" class="access-notice">Accede con la cuenta del vendedor registrado para completar los datos y generar la factura.</p>
+                <form id="checkoutForm">
+                    <fieldset id="sellerFields" disabled>
+                        <div class="form-grid">
+                            <div class="form-group"><label for="nombre">Nombre completo</label><input id="nombre" required placeholder="Ej. Carlos Pérez"></div>
+                            <div class="form-group"><label for="email">Correo electrónico</label><input id="email" type="email" required placeholder="carlos@example.com"></div>
+                            <div class="form-group"><label for="telefono">Teléfono (8 dígitos)</label><input id="telefono" type="tel" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" minlength="8" required placeholder="70000000"></div>
+                            <div class="form-group"><label for="direccion">Dirección de envío</label><input id="direccion" required placeholder="Dirección"></div>
+                        </div>
+                        <div class="form-group"><label for="metodoPago">Método de pago</label><select id="metodoPago"><option>Contra Entrega</option><option>Transferencia bancaria</option></select></div>
+                        <button type="submit" class="btn-checkout">Generar factura</button>
+                    </fieldset>
+                </form>
+            </section>
+        </div>
+        <section class="invoice-container" id="invoiceContainer" hidden>
+            <h2>FACTURA DE VENTA - TIENDA LIBRE</h2><p>Fecha: <span id="facturaFecha"></span></p>
+            <div class="invoice-details"><p>Cliente: <span id="facturaNombre"></span></p><p>Correo: <span id="facturaEmail"></span></p><p>Teléfono: <span id="facturaTelefono"></span></p><p>Dirección: <span id="facturaDireccion"></span></p><p>Pago: <span id="facturaPago"></span></p></div>
+            <table><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody id="facturaBody"></tbody></table>
+            <p class="summary-total">Total: <span id="facturaTotal"></span></p>
+            <div class="invoice-actions no-print">
+                <button type="button" class="btn-invoice" id="btnImprimirFactura">Imprimir</button>
+                <button type="button" class="btn-invoice" id="btnGuardarPDF">Guardar en PDF</button>
+                <button type="button" class="btn-invoice" id="btnEnviarFactura">Enviar factura</button>
+                <button type="button" class="btn-invoice btn-back" id="btnRegresarCarrito">Volver al carrito</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="no-print">
+        <p>&copy; 2026 TiendaLibre. Todos los derechos reservados. Desarrollado con HTML, CSS y JavaScript.</p>
+    </footer>
+    <!-- jsPDF local: en la app no hay internet ni CDN disponible. -->
+    <script src="../js/jspdf.umd.min.js"></script>
+    <script>
+        // Si jsPDF no cargó desde el archivo local, se intenta el CDN como respaldo.
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            document.write('<script src="https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        const STORAGE_KEYS = ['carritoCompras', 'carrito'];
+        const cartTableBody = document.getElementById('cartTableBody');
+        const cartCount = document.getElementById('cart-count');
+        const cartCounter = document.getElementById('cartCounter');
+        const sellerFields = document.getElementById('sellerFields');
+        const accessNotice = document.getElementById('sellerAccessNotice');
+        let sellerEmail = '';
+        function formatearPrecio(v) { return new Intl.NumberFormat('es-SV',{style:'currency',currency:'USD'}).format(Number(v)||0); }
+        function escaparHtml(v) { return String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c])); }
+        function leerCarrito() { for(const key of STORAGE_KEYS){const raw=localStorage.getItem(key);if(!raw)continue;try{const data=JSON.parse(raw);if(Array.isArray(data))return data.map(p=>({...p,cantidad:Math.max(1,Number(p.cantidad)||1),precio:Math.max(0,Number(p.precio)||0),titulo:p.titulo||'Producto sin título',descripcion:p.descripcion||''}));}catch(e){console.warn('No se pudo leer el carrito:',e);}}return []; }
+        function guardarCarrito(items){localStorage.setItem('carritoCompras',JSON.stringify(items));localStorage.setItem('carrito',JSON.stringify(items));}
+        function esPropioDelVendedor(p){return Boolean(sellerEmail)&&String(p.vendedorId||'').toLowerCase()==='email:'+sellerEmail;}
+        function actualizarContadorCarrito(){const n=leerCarrito().reduce((s,p)=>s+Number(p.cantidad||1),0);if(cartCount)cartCount.textContent=n;if(cartCounter)cartCounter.textContent='Carrito ('+n+')';}
+        function renderizarCarrito(){const carrito=leerCarrito();if(!cartTableBody)return;if(!carrito.length){cartTableBody.innerHTML='<tr><td colspan="5" class="cart-empty-state">Tu carrito está vacío. Añade productos desde el catálogo.</td></tr>';}else{cartTableBody.innerHTML=carrito.map((p,i)=>{const canEdit=esPropioDelVendedor(p);return '<tr><td><div class="product-cell"><img src="'+escaparHtml(p.imagen||'https://via.placeholder.com/80x80?text=Sin+Imagen')+'" alt="'+escaparHtml(p.titulo)+'"><strong>'+escaparHtml(p.titulo)+'</strong><small>'+escaparHtml(p.descripcion)+'</small></div></td><td>'+(canEdit?'<input class="edit-field price-input" aria-label="Precio" type="number" min="0" step="0.01" data-index="'+i+'" value="'+p.precio+'">':formatearPrecio(p.precio))+'</td><td>'+(canEdit?'<input class="edit-field qty-input" aria-label="Cantidad" type="number" min="1" step="1" data-index="'+i+'" value="'+p.cantidad+'">':p.cantidad)+'</td><td>'+formatearPrecio(p.precio*p.cantidad)+'</td><td><button type="button" class="btn-remove-item" data-remove-index="'+i+'">Eliminar</button></td></tr>';}).join('');}const total=carrito.reduce((s,p)=>s+p.precio*p.cantidad,0);document.getElementById('summarySubtotal').textContent=formatearPrecio(total);document.getElementById('summaryTotal').textContent=formatearPrecio(total);actualizarContadorCarrito();}
+        function setSellerAccess(){try{const user=JSON.parse(localStorage.getItem('sesion_activa')||'null');sellerEmail=String(user?.email||'').trim().toLowerCase();}catch(e){sellerEmail='';}sellerFields.disabled=!sellerEmail;document.getElementById('codigoEscaneado').disabled=!sellerEmail;document.getElementById('btnAgregarEscaneado').disabled=!sellerEmail;accessNotice.textContent=sellerEmail?'Sesión activa: '+sellerEmail+'. Puedes completar los datos y generar la factura.':'Accede con la cuenta del vendedor registrado para completar los datos y generar la factura.';renderizarCarrito();}
+        function agregarPorCodigo(){const input=document.getElementById('codigoEscaneado'),status=document.getElementById('estadoEscaneo'),code=input.value.trim();if(!sellerEmail){status.textContent='Accede como vendedor para agregar productos.';return;}if(!code){status.textContent='Escanea o escribe un código de barras.';return;}let published=[];try{published=JSON.parse(localStorage.getItem('productosDinamicos')||'[]');}catch(e){}const product=Array.isArray(published)?published.find(p=>String(p.codigoBarras||'').trim().toLowerCase()===code.toLowerCase()):null;if(!product){status.textContent='No se encontró un producto con ese código.';return;}if(product.reservado){status.textContent='El producto está reservado.';return;}const items=leerCarrito(),found=items.find(p=>p.id&&product.id?String(p.id)===String(product.id):p.codigoBarras&&p.codigoBarras===product.codigoBarras);if(found)found.cantidad++;else items.push({...product,cantidad:1});guardarCarrito(items);renderizarCarrito();status.textContent='Producto agregado al carrito.';input.value='';input.focus();}
+        document.getElementById('btnAgregarEscaneado').addEventListener('click',agregarPorCodigo);
+        document.getElementById('codigoEscaneado').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();agregarPorCodigo();}});
+        document.addEventListener('input',event=>{if(!event.target.classList.contains('edit-field'))return;const items=leerCarrito(),i=Number(event.target.dataset.index),p=items[i];if(!p||!esPropioDelVendedor(p))return;if(event.target.classList.contains('price-input'))p.precio=Math.max(0,Number(event.target.value)||0);if(event.target.classList.contains('qty-input'))p.cantidad=Math.max(1,Number(event.target.value)||1);guardarCarrito(items);renderizarCarrito();});
+        document.addEventListener('click',event=>{const btn=event.target.closest('.btn-remove-item');if(!btn)return;const items=leerCarrito(),i=Number(btn.dataset.removeIndex);if(!Number.isInteger(i)||!items[i])return;items.splice(i,1);guardarCarrito(items);renderizarCarrito();});
+        document.getElementById('telefono').addEventListener('input',event=>event.target.value=event.target.value.replace(/\D/g,'').slice(0,8));
+        function crearPDFFactura(){if(!window.jspdf?.jsPDF){alert('No se pudo cargar el generador de PDF. Revisa tu conexión o usa Imprimir y elige Guardar como PDF.');return null;}const {jsPDF}=window.jspdf;const pdf=new jsPDF();let y=18;pdf.setFontSize(18);pdf.text('FACTURA DE VENTA - TIENDA LIBRE',14,y);y+=10;pdf.setFontSize(11);for(const id of ['facturaFecha','facturaNombre','facturaEmail','facturaTelefono','facturaDireccion','facturaPago']){const el=document.getElementById(id);const label={facturaFecha:'Fecha',facturaNombre:'Cliente',facturaEmail:'Correo',facturaTelefono:'Teléfono',facturaDireccion:'Dirección',facturaPago:'Método de pago'}[id];const lines=pdf.splitTextToSize(label+': '+el.textContent,180);if(y+lines.length*6>275){pdf.addPage();y=18;}pdf.text(lines,14,y);y+=lines.length*6;}y+=4;pdf.setFont('helvetica','bold');pdf.text('Producto',14,y);pdf.text('Cant.',112,y);pdf.text('Precio',132,y);pdf.text('Subtotal',164,y);y+=4;pdf.line(14,y,196,y);y+=7;pdf.setFont('helvetica','normal');for(const item of leerCarrito()){const title=pdf.splitTextToSize(item.titulo,90);const rowHeight=Math.max(6,title.length*5);if(y+rowHeight>270){pdf.addPage();y=18;}pdf.text(title,14,y);pdf.text(String(item.cantidad),112,y);pdf.text(formatearPrecio(item.precio),132,y);pdf.text(formatearPrecio(item.precio*item.cantidad),164,y);y+=rowHeight+3;}y+=4;pdf.setFont('helvetica','bold');pdf.text('TOTAL: '+document.getElementById('facturaTotal').textContent,196,y,{align:'right'});return pdf;}
+        function nombrePDF(){return 'factura-tienda-libre.pdf';}
+        // Indica si la página se ejecuta dentro de la app Android (WebView).
+        function enAppAndroid(){return Boolean(window.AndroidArchivos && typeof window.AndroidArchivos.guardarPdf === 'function');}
+        // Convierte el PDF a texto base64 para pasarlo al lado nativo de Android.
+        function pdfABase64(pdf){try{return pdf.output('datauristring').split(',')[1];}catch(e){return '';}}
+        document.getElementById('btnImprimirFactura').addEventListener('click',()=>{
+            // En la app se usa el servicio de impresión de Android (no existe window.print).
+            if(enAppAndroid()){const pdf=crearPDFFactura();if(!pdf)return;window.AndroidArchivos.imprimirPdf(pdfABase64(pdf),nombrePDF());return;}
+            window.print();
+        });
+        document.getElementById('btnGuardarPDF').addEventListener('click',()=>{
+            const pdf=crearPDFFactura();if(!pdf)return;
+            if(enAppAndroid()){window.AndroidArchivos.guardarPdf(pdfABase64(pdf),nombrePDF());return;}
+            pdf.save(nombrePDF());
+        });
+        document.getElementById('btnEnviarFactura').addEventListener('click',async()=>{
+            const pdf=crearPDFFactura();if(!pdf)return;
+            // En la app se abre el menú de compartir de Android con el PDF adjunto.
+            if(enAppAndroid()){window.AndroidArchivos.compartirPdf(pdfABase64(pdf),nombrePDF(),'Factura de Tienda Libre');return;}
+            const blob=pdf.output('blob');const file=new File([blob],nombrePDF(),{type:'application/pdf'});if(navigator.share&&navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],title:'Factura de Tienda Libre',text:'Factura de compra'});}catch(e){if(e.name!=='AbortError')alert('No se pudo compartir. Puedes guardar el PDF y adjuntarlo en tu aplicación de mensajes.');}return;}pdf.save(nombrePDF());alert('Este navegador no permite adjuntar el archivo al compartir. Se descargó la factura PDF para que puedas enviarla.');
+        });
+        document.getElementById('btnRegresarCarrito').addEventListener('click',()=>{document.getElementById('invoiceContainer').hidden=true;document.getElementById('proceso-compra-wrapper').hidden=false;document.querySelector('.cart-products').scrollIntoView({behavior:'smooth',block:'start'});});
+        document.getElementById('checkoutForm').addEventListener('submit',event=>{event.preventDefault();if(!sellerEmail){alert('Inicia sesión con la cuenta del vendedor registrado para generar la factura.');return;}const items=leerCarrito();if(!items.length){alert('El carrito está vacío.');return;}const fields=['nombre','email','telefono','direccion'];for(const id of fields)document.getElementById('factura'+id[0].toUpperCase()+id.slice(1)).textContent=document.getElementById(id).value.trim();document.getElementById('facturaPago').textContent=document.getElementById('metodoPago').value;document.getElementById('facturaFecha').textContent=new Date().toLocaleDateString('es-SV');document.getElementById('facturaBody').innerHTML=items.map(p=>'<tr><td>'+escaparHtml(p.titulo)+'</td><td>'+p.cantidad+'</td><td>'+formatearPrecio(p.precio)+'</td><td>'+formatearPrecio(p.precio*p.cantidad)+'</td></tr>').join('');document.getElementById('facturaTotal').textContent=formatearPrecio(items.reduce((s,p)=>s+p.precio*p.cantidad,0));document.getElementById('proceso-compra-wrapper').hidden=true;document.getElementById('invoiceContainer').hidden=false;document.getElementById('invoiceContainer').scrollIntoView({behavior:'smooth'});});
+        window.addEventListener('storage',event=>{if(event.key==='carrito'||event.key==='carritoCompras'||event.key==='sesion_activa'||event.key===null)setSellerAccess();});
+        setSellerAccess();
+
+        // "Salir": cierra la página o la aplicación si el usuario lo confirma.
+        function salirApp(event) {
+            if (event) event.preventDefault();
+            if (!confirm('¿Seguro que quieres salir?')) return;
+            try {
+                if (window.AndroidSalir && typeof window.AndroidSalir.salir === 'function') {
+                    window.AndroidSalir.salir();
+                    return;
+                }
+            } catch (error) {
+                // La interfaz nativa no está disponible (navegador de escritorio).
+            }
+            window.close();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contáctanos para impulsar tu estrategia de marketing digital.">
+    <title>Contacto | Agencia de Marketing</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+</head>
+<body>
+
+    <!-- Botón "Salir": fijo arriba a la derecha. -->
+    <button type="button" class="btn-salir" onclick="salirApp(event)" aria-label="Salir de la aplicación"
+        style="position:fixed;top:.7rem;right:.8rem;z-index:1000;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.4rem .9rem;background-color:#6b7280;color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;white-space:nowrap;">Salir</button>
+
+    <header class="header-principal">
+        <nav class="nav-container">
+            <a href="../index.html" class="logo">MarketingPro</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="servicios.html">Servicios</a></li>
+                <li><a href="contacto.html" class="active">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="contacto-container">
+            <h2>Hablemos de tu Proyecto</h2>
+            <p>Completa el formulario y nos pondremos en contacto contigo en menos de 24 horas.</p>
+
+            <form id="formContacto" novalidate>
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo *</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez">
+                    <span class="error-message" id="errorNombre"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico *</label>
+                    <input type="email" id="correo" name="correo" placeholder="ejemplo@dominio.com">
+                    <span class="error-message" id="errorCorreo"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono *</label>
+                    <input type="tel" id="telefono" name="telefono" placeholder="Ej. 70000000">
+                    <span class="error-message" id="errorTelefono"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="servicio">Servicio de Interés *</label>
+                    <select id="servicio" name="servicio">
+                        <option value="">Selecciona una opción</option>
+                        <option value="seo">Posicionamiento SEO</option>
+                        <option value="ads">Publicidad Digital (PPC)</option>
+                        <option value="social">Gestión de Redes Sociales</option>
+                    </select>
+                    <span class="error-message" id="errorServicio"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="mensaje">Mensaje *</label>
+                    <textarea id="mensaje" name="mensaje" rows="4" placeholder="Cuéntanos sobre tu negocio..."></textarea>
+                    <span class="error-message" id="errorMensaje"></span>
+                </div>
+
+                <button type="submit" class="btn-submit">Enviar Mensaje</button>
+                <div id="formFeedback" class="form-feedback"></div>
+            </form>
+        </section>
+    </main>
+
+    <script src="../js/validaciones.js"></script>
+    <script>
+        // "Salir": cierra la página o la aplicación si el usuario lo confirma.
+        function salirApp(event) {
+            if (event) event.preventDefault();
+            if (!confirm('¿Seguro que quieres salir?')) return;
+            try {
+                if (window.AndroidSalir && typeof window.AndroidSalir.salir === 'function') {
+                    window.AndroidSalir.salir();
+                    return;
+                }
+            } catch (error) {
+                // La interfaz nativa no está disponible (navegador de escritorio).
+            }
+            window.close();
+        }
+    </script>
+</body>
+</html>
