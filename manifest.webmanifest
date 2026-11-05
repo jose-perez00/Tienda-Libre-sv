@@ -1,0 +1,32 @@
+{
+  "id": "/",
+  "name": "Tienda Libre SV",
+  "short_name": "Tienda Libre",
+  "description": "Compra y vende productos en Tienda Libre SV.",
+  "start_url": "https://tienda-libre-prueba.onrender.com/",
+  "scope": "https://tienda-libre-prueba.onrender.com/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f9fa",
+  "theme_color": "#1e50c5",
+  "icons": [
+    {
+      "src": "/logo/Ventasv.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

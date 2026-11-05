@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Producto - TiendaLibre</title>
+    <style>
+        /* Estilos generales idénticos para mantener la coherencia visual */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Barra de Navegación */
+        header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            display: block;
+            height: 90px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        /* Botón "Salir": cierra la página/aplicación si el usuario lo desea. */
+        .btn-salir { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.4rem 0.9rem; background-color: #6b7280; color: #fff; border: none; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 0.95rem; cursor: pointer; white-space: nowrap; }
+        .btn-salir:hover { background-color: #4b5563; }
+
+        .btn-sell {
+            background-color: #10b981;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .btn-sell:hover {
+            background-color: #059669 !important;
+        }
+
+        /* Contenedor de Detalle de Producto */
+        .product-detail-container {
+            max-width: 1100px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            align-items: center;
+        }
+
+        .product-image-box img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .product-details-box h1 {
+            font-size: 2.2rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .product-price-tag {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-description {
+            color: #4b5563;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        /* Opciones de cantidad y compra */
+        .purchase-options {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .quantity-selector button {
+            background-color: #f3f4f6;
+            border: none;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .quantity-selector button:hover {
+            background-color: #e5e7eb;
+        }
+
+        .quantity-selector input {
+            width: 50px;
+            text-align: center;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.85rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-add-cart:hover {
+            background-color: #1d4ed8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        /* Responsive para celulares */
+        @media (max-width: 768px) {
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 700px) {
+            header .nav-container { flex-direction: column; align-items: flex-start; gap: .5rem; padding: .75rem 1rem; }
+            header .logo { align-self: flex-start; }
+            /* Menú deslizable, elegante: borde redondeado con relieve y sombra. */
+            header .nav-links {
+                width: 100%; justify-content: flex-start; flex-wrap: nowrap;
+                gap: .35rem; font-size: .9rem;
+                overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+                padding: 0.35rem 0.45rem;
+                background: rgba(255, 255, 255, 0.55);
+                border: 1px solid rgba(255, 255, 255, 0.75);
+                border-radius: 12px;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -2px 4px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.08);
+            }
+            header .nav-links::-webkit-scrollbar { display: none; }
+            header .nav-links li { flex: 0 0 auto; }
+            header .nav-links a {
+                display: inline-flex; align-items: center; min-height: 40px; white-space: nowrap;
+                padding: 0 0.7rem; border-radius: 9px; transition: background .2s, color .2s;
+            }
+            header .nav-links a:hover { background: rgba(37, 99, 235, 0.1); }
+            .product-detail-container { margin: 1.5rem auto; padding: 0 1rem; }
+            .product-detail-grid { padding: 1.25rem; }
+            .product-image-box img { height: clamp(220px, 65vw, 360px); }
+            .product-details-box h1 { font-size: 1.7rem; }
+        }
+
+        @media (max-width: 420px) {
+            header .nav-links { gap: .2rem .55rem; font-size: .9rem; }
+            .product-detail-grid { padding: 1rem; }
+            .purchase-options { align-items: stretch; flex-direction: column; }
+            .quantity-selector { justify-content: center; }
+            .btn-add-cart { width: 100%; }
+        }
+
+        /* Pie de página */
+        footer {
+            background-color: #1f2937;
+            color: #9ca3af;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de Navegación -->
+    <header>
+        <div class="nav-container">
+            <a href="../index.html" class="logo" aria-label="Tienda Libre SV - Inicio">
+                <img src="../banner/LOGO1.png" alt="Tienda Libre SV">
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="carrito.html">Carrito (0)</a></li>
+                <li><a href="vender.html" class="btn-sell">Vender un producto</a></li>
+                <li><button type="button" class="btn-salir" onclick="salirApp(event)" aria-label="Salir de la aplicación">Salir</button></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Contenedor del Detalle del Producto -->
+    <main class="product-detail-container">
+        
+        <div class="product-detail-grid">
+            <!-- Imagen del Producto -->
+            <div class="product-image-box">
+                <img id="img-producto" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" alt="Imagen del producto">
+            </div>
+
+            <!-- Información y Opciones -->
+            <div class="product-details-box">
+                <h1 id="titulo-producto">Reloj Minimalista Moderno</h1>
+                <div class="product-price-tag" id="precio-producto">$45.00</div>
+                <p class="product-description" id="descripcion-producto">
+                    Un accesorio elegante diseñado para quienes aprecian la simplicidad y el estilo. Fabricado con materiales de alta calidad, cristal resistente a rayones y correa de cuero genuino. Ideal para cualquier ocasión.
+                </p>
+
+                <!-- Selector de cantidad y botón -->
+                <div class="purchase-options">
+                    <div class="quantity-selector">
+                        <button type="button" id="btn-menos">-</button>
+                        <input type="text" id="input-cantidad" value="1" readonly>
+                        <button type="button" id="btn-mas">+</button>
+                    </div>
+                    <button type="button" class="btn-add-cart" id="btnAgregarCarrito">Agregar al Carrito</button>
+                </div>
+            </div>
+        </div>
+
+        <a href="catalogo.html" class="back-link">&larr; Volver al catálogo</a>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>&copy; 2026 TiendaLibre. Todos los derechos reservados. Desarrollado con HTML, CSS y JavaScript.</p>
+    </footer>
+
+    <!-- Script de interactividad -->
+    <script>
+        // Lógica para aumentar o disminuir la cantidad de piezas
+        const inputCantidad = document.getElementById('input-cantidad');
+        const btnMenos = document.getElementById('btn-menos');
+        const btnMas = document.getElementById('btn-mas');
+        const btnAgregar = document.getElementById('btnAgregarCarrito');
+
+        // Elementos HTML donde se inyectará la información
+        const tituloEl = document.getElementById('titulo-producto');
+        const precioEl = document.getElementById('precio-producto');
+        const imagenEl = document.getElementById('img-producto');
+        const descripcionEl = document.getElementById('descripcion-producto');
+
+        btnMas.addEventListener('click', () => {
+            let valorActual = parseInt(inputCantidad.value);
+            inputCantidad.value = valorActual + 1;
+        });
+
+        btnMenos.addEventListener('click', () => {
+            let valorActual = parseInt(inputCantidad.value);
+            if (valorActual > 1) {
+                inputCantidad.value = valorActual - 1;
+            }
+        });
+
+        // Agregar el producto mostrado al carrito
+        btnAgregar.addEventListener('click', () => {
+            const cantidad = Math.max(1, parseInt(inputCantidad.value, 10) || 1);
+            const producto = {
+                id: new URLSearchParams(window.location.search).get('id') || tituloEl.textContent,
+                titulo: tituloEl.textContent,
+                precio: Number(String(precioEl.textContent).replace(/[^0-9.]/g, '')) || 0,
+                imagen: imagenEl.getAttribute('src') || '',
+                descripcion: descripcionEl.textContent,
+                cantidad
+            };
+            let carrito = [];
+            try {
+                carrito = JSON.parse(localStorage.getItem('carritoCompras') || '[]');
+                if (!Array.isArray(carrito)) carrito = [];
+            } catch (error) {
+                carrito = [];
+            }
+            const existente = carrito.findIndex((item) => item.titulo === producto.titulo && Number(item.precio) === producto.precio);
+            if (existente >= 0) {
+                carrito[existente].cantidad = Number(carrito[existente].cantidad || 1) + cantidad;
+            } else {
+                carrito.push(producto);
+            }
+            localStorage.setItem('carritoCompras', JSON.stringify(carrito));
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            alert(`Se agregaron ${cantidad} unidad(es) de "${producto.titulo}" al carrito.`);
+        });
+
+        // 1. Leer el parámetro 'id' de la URL (Ej: productos.html?id=dinamico-0)
+        const params = new URLSearchParams(window.location.search);
+        const productoId = params.get('id');
+
+        // Base de datos simulada de productos fijos (en caso de que sea un producto estático)
+        const productosFijos = {
+            "fijo-0": {
+                titulo: "Smartphone Gama Alta",
+                precio: "699.99",
+                imagen: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
+                descripcion: "Teléfono inteligente con cámara de alta resolución, excelente rendimiento y batería de larga duración."
+            },
+            "fijo-1": {
+                titulo: "Auriculares Inalámbricos Pro",
+                precio: "149.50",
+                imagen: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
+                descripcion: "Cancelación activa de ruido, sonido envolvente de alta fidelidad y hasta 30 horas de reproducción."
+            }
+            // Agrega más productos fijos aquí si los tienes...
+        };
+
+        if (productoId) {
+            let productoData = null;
+
+            if (productoId.startsWith('dinamico-')) {
+                // Es un producto creado por el usuario en localStorage
+                const index = productoId.split('-')[1];
+                const productosDinamicos = JSON.parse(localStorage.getItem('productosDinamicos')) || [];
+                productoData = productosDinamicos[index];
+            } else if (productosFijos[productoId]) {
+                // Es un producto fijo de la tienda
+                productoData = productosFijos[productoId];
+            }
+
+            // Si encontramos el producto, rellenamos la página
+            if (productoData) {
+                if (tituloEl) tituloEl.textContent = productoData.titulo;
+                if (precioEl) precioEl.textContent = `$${productoData.precio}`;
+                const portadaProducto = Array.isArray(productoData.imagenes) && productoData.imagenes.length
+                    ? productoData.imagenes[0]
+                    : (productoData.imagen || 'https://via.placeholder.com/500x300?text=Sin+Imagen');
+                if (imagenEl) imagenEl.src = portadaProducto;
+                if (descripcionEl) descripcionEl.textContent = productoData.descripcion;
+            } else {
+                document.querySelector('main').innerHTML = `<h2>Producto no encontrado</h2><p>El artículo que buscas no existe o fue eliminado.</p>`;
+            }
+        }
+
+        // "Salir": cierra la página o la aplicación si el usuario lo confirma.
+        function salirApp(event) {
+            if (event) event.preventDefault();
+            if (!confirm('¿Seguro que quieres salir?')) return;
+            try {
+                if (window.AndroidSalir && typeof window.AndroidSalir.salir === 'function') {
+                    window.AndroidSalir.salir();
+                    return;
+                }
+            } catch (error) {
+                // La interfaz nativa no está disponible (navegador de escritorio).
+            }
+            window.close();
+        }
+    </script>
+
+</body>
+</html>

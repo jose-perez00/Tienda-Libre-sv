@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1e50c5">
+    <link rel="icon" type="image/png" href="logo/Ventasv.png">
+    <link rel="apple-touch-icon" href="logo/Ventasv.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <title>Tienda Libre - Tu Espacio de E-commerce</title>
+
+    <style>
+        /* Estilos generales limpios y modernos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden; /* Evita el desplazamiento horizontal en pantallas pequeñas */
+        }
+
+        /* Los campos de texto se adaptan al ancho disponible y evitan el zoom automático en iOS. */
+        input, select, textarea, button {
+            max-width: 100%;
+            font-family: inherit;
+        }
+
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        /* Barra de Navegación */
+        header {
+            width: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.62)), url('banner/banner2.gif');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            display: block;
+            height: 90px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #0a0a0a;
+            font-weight: 700;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .btn-sell {
+            background-color: #10b981;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .btn-sell:hover {
+            background-color: #223a32ec !important;
+        }
+
+        .btn-sell-icon {
+            min-width: 0;
+            height: 44px;
+            padding: 0.25rem 0.6rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            border: 2px solid #d1fae5;
+            border-radius: 12px;
+            vertical-align: middle;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-sell-icon span { white-space: nowrap; line-height: 1; }
+        .btn-sell-icon:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(16,185,129,.3); }
+        .btn-sell-icon img { width: 26px; height: 26px; flex: 0 0 26px; object-fit: contain; display: block; }
+
+        .btn-logout {
+            background-color: #ef4444;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: none; /* Se oculta por defecto si no hay sesión */
+        }
+
+        .btn-logout:hover {
+            background-color: #dc2626;
+        }
+
+        /* Botón "Salir": fijo arriba a la derecha del encabezado.
+           Cierra la página/aplicación si el usuario lo desea. */
+        header { position: relative; }
+        .btn-salir {
+            position: absolute;
+            top: 0.6rem;
+            right: 0.7rem;
+            z-index: 20;
+            background-color: #6b7280;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-salir:hover {
+            background-color: #4b5563;
+        }
+
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Barra de búsqueda de productos destacados */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .search-container button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0 2rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .search-container button:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* Sección de Productos Destacados */
+        .featured-section {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #1f2937;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-height: 280px;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+            background-color: #f3f4f6;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .btn-buy {
+            display: block;
+            text-align: center;
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .btn-cart {
+            display: block;
+            text-align: center;
+            background-color: #10b981;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #6b7280;
+            background: #fff;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .btn-buy:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* Apartado para Vender (Llamado a la acción) */
+        .sell-banner {
+            background-color: #eff6ff;
+            border-top: 1px solid #dbeafe;
+            border-bottom: 1px solid #dbeafe;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .sell-banner h2 {
+            font-size: 2.2rem;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+        }
+
+        .sell-banner p {
+            color: #4b5563;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            font-size: 1.1rem;
+        }
+
+        .btn-large {
+            display: inline-block;
+            background-color: #10b981;
+            color: white;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-large:hover {
+            background-color: #059669;
+        }
+
+        /* Pie de página */
+        footer {
+            background-color: #1f2937;
+            color: #9ca3af;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 0;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de Navegación -->
+    <header>
+        <!-- Botón "Salir" fijo arriba a la derecha. -->
+        <button id="btnSalir" class="btn-salir" type="button" onclick="salirApp(event)" aria-label="Salir de la aplicación">Salir</button>
+
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="Tienda Libre SV - Inicio">
+                <img src="banner/LOGO1.png" alt="Tienda Libre SV">
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="paginas/catalogo.html">Catálogo</a></li>
+                <li><a href="paginas/carrito.html" onclick="verificarAccion('carrito', event)">Carrito (0)</a></li>
+                <li id="nav-register-link"><a href="paginas/registrarse1.html?modo=registro">Registrarse</a></li>
+                <li><a href="paginas/vender.html" class="btn-sell btn-sell-icon" aria-label="Vender un producto" title="Vender un producto" onclick="verificarAccion('vender', event)"><img src="logo/icono1.png" alt=""><span>Vender</span></a></li>
+                <li><button id="btnCerrarSesion" class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button></li>
+            </ul>
+        </div>
+    </header>
+
+       <!-- Banner Principal (Hero Section) con Texto Animado -->
+   <section class="hero">
+       <img class="hero-product hero-product-left" src="logo/imagene2.avif" alt="Producto destacado">
+       <div class="hero-copy">
+           <h1 class="hero-title">Tienda Libre SV,<span class="gradient-text"> Compra y Vende Sin Limites</span></h1>
+           <p class="hero-subtitle">La plataforma donde tú decides qué ofrecer al mundo con la mejor presentación visual.</p>
+           <div class="search-container">
+               <input type="text" placeholder="¿Qué producto estás buscando hoy?">
+               <button type="button">Buscar</button>
+           </div>
+       </div>
+       <img class="hero-product hero-product-right" src="logo/imagen3.jpg" alt="Producto destacado">
+   </section>
+
+<style>
+    /* Estilos base de la Hero Section */
+    .hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr) minmax(0, 1fr);
+        align-items: center;
+        gap: 1.5rem;
+        text-align: center;
+        padding: 6rem 3rem;
+        background: linear-gradient(133deg, #1e50c5 0%, #1e293b 100%);
+        color: #ffffff;
+        min-height: 60vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        perspective: 1000px;
+    }
+
+    .hero-product {
+        justify-self: center;
+        width: min(100%, 220px);
+        height: auto;
+        mix-blend-mode: multiply;
+        transform-style: preserve-3d;
+        animation: product-float 4.5s ease-in-out infinite;
+    }
+
+    .hero-copy {
+        min-width: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-product-left { animation-delay: -1.2s; }
+    .hero-product-right { animation-delay: -3.1s; }
+
+    @keyframes product-float {
+        0%, 100% {
+            transform: translateY(5px) rotateY(-8deg) rotateZ(-1deg);
+        }
+        50% {
+            transform: translateY(-7px) rotateY(8deg) rotateZ(1deg);
+        }
+    }
+
+    /* Titulo y texto del banner con tipografia sencilla y legible */
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: 400;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+        transform-style: preserve-3d;
+        animation: banner-appear 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both,
+                   banner-title-color 8s ease-in-out 700ms infinite alternate;
+    }
+
+    .gradient-text {
+        color: #bfdbfe;
+        font-weight: inherit;
+        animation: banner-highlight-color 7s ease-in-out 700ms infinite alternate;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+        color: #f1f5f9;
+        max-width: 600px;
+        line-height: 1.6;
+        transform-style: preserve-3d;
+        animation: banner-appear 700ms cubic-bezier(0.2, 0.7, 0.2, 1) 120ms both,
+                   banner-subtitle-color 8s ease-in-out 820ms infinite alternate;
+    }
+
+    @keyframes banner-appear {
+        from {
+            opacity: 0;
+            transform: rotateX(-14deg) translateY(10px) translateZ(-24px);
+        }
+        to {
+            opacity: 1;
+            transform: rotateX(0) translateY(0) translateZ(0);
+        }
+    }
+
+    @keyframes banner-title-color {
+        from { color: #ffffff; }
+        to { color: #bfdbfe; }
+    }
+
+    @keyframes banner-highlight-color {
+        from { color: #bfdbfe; }
+        to { color: #fde68a; }
+    }
+
+    @keyframes banner-subtitle-color {
+        from { color: #f1f5f9; }
+        to { color: #c7d2fe; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-title,
+        .hero-subtitle,
+        .hero-product,
+        .gradient-text {
+            animation: none;
+        }
+    }
+
+    /* Responsividad para moviles */
+    @media (max-width: 768px) {
+        .hero {
+            gap: 1rem;
+        }
+        .hero-title {
+            font-size: 2rem;
+        }
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 560px) {
+        .hero {
+            grid-template-columns: minmax(52px, 0.7fr) minmax(0, 2.2fr) minmax(52px, 0.7fr);
+            gap: 0.5rem;
+            padding: 3rem 0.75rem;
+            min-height: 50vh;
+        }
+        .hero-product {
+            width: 100%;
+        }
+        .hero-title {
+            font-size: 1.55rem;
+        }
+        .hero-subtitle {
+            max-width: 92%;
+        }
+    }
+
+    @media (max-width: 700px) {
+        header .nav-container { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 0.75rem 0.6rem; }
+        header .logo { align-self: flex-start; }
+        header .logo img { height: 72px; }
+        /* Menú deslizable, elegante: borde redondeado con relieve y sombra. */
+        header .nav-links {
+            width: 100%;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            gap: 0.35rem;
+            font-size: 0.92rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 0.35rem 0.45rem;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            border-radius: 12px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -2px 4px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.08);
+        }
+        header .nav-links::-webkit-scrollbar { display: none; }
+        header .nav-links li { flex: 0 0 auto; }
+        header .nav-links a, header .nav-links button {
+            display: inline-flex;
+            align-items: center;
+            min-height: 42px;
+            white-space: nowrap;
+            padding: 0 0.7rem;
+            border-radius: 9px;
+            transition: background .2s, color .2s;
+        }
+        header .nav-links a:hover { background: rgba(37, 99, 235, 0.1); }
+        header .btn-sell-icon { height: 40px; padding: 0.2rem 0.5rem; gap: 0.25rem; }
+        header .btn-salir, header .btn-logout { min-height: 42px; padding: 0.4rem 0.85rem; font-size: 0.92rem; }
+        /* El botón Salir se mantiene pegado a la esquina superior derecha. */
+        header .btn-salir { top: 0.5rem; right: 0.55rem; }
+        header .btn-sell-icon img { width: 20px; height: 20px; flex-basis: 20px; }
+        .search-container { border-radius: 30px; }
+        .search-container input { padding: 0.85rem 1.1rem; min-width: 0; }
+        .search-container button { padding: 0 1.2rem; }
+        .featured-section { margin: 2.5rem auto; padding: 0 1rem; }
+        .section-title { font-size: 1.6rem; margin-bottom: 1.5rem; }
+        .product-grid { gap: 1.25rem; }
+        .sell-banner { padding: 3rem 1.25rem; margin-top: 3rem; }
+        .sell-banner h2 { font-size: 1.7rem; }
+        .sell-banner p { font-size: 1rem; }
+        .btn-large { display: block; width: 100%; padding: 1rem 1.25rem; }
+        footer { padding: 1.5rem 1rem; }
+    }
+
+    @media (max-width: 420px) {
+        header .nav-links { gap: 0.2rem 0.5rem; font-size: 0.84rem; }
+        header .btn-sell-icon { height: 38px; padding: 0.2rem 0.45rem; }
+        header .btn-sell-icon img { width: 18px; height: 18px; flex-basis: 18px; }
+        .featured-section { margin: 2rem auto; padding: 0 1rem; }
+        .product-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+        .section-title { font-size: 1.4rem; }
+        .product-info { padding: 1.15rem; }
+        .sell-banner { padding: 2.5rem 1rem; }
+        .sell-banner h2 { font-size: 1.45rem; }
+    }
+</style>
+
+    <!-- Sección de Productos Destacados -->
+    <section class="featured-section">
+        <h2 class="section-title">Productos Destacados</h2>
+        <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <!-- Apartado para Vender -->
+    <section class="sell-banner">
+        <h2>¿Tienes algo increíble para vender?</h2>
+        <p>Sube tus propios productos a nuestra plataforma en cuestión de minutos, define tus precios y preséntalos al mundo con total libertad.</p>
+        <a href="paginas/vender.html" class="btn-large" onclick="verificarAccion('vender', event)">Vender un producto</a>
+    </section>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>&copy; 2026 TiendaLibre. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Script de JavaScript para la barra de búsqueda y control inteligente de sesión -->
+    <script>
+        // Al cargar la página, revisamos si hay una sesión activa para adaptar la interfaz
+        window.addEventListener('DOMContentLoaded', () => {
+            const sesionActiva = localStorage.getItem('sesion_activa');
+            const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+            const navRegisterLink = document.getElementById('nav-register-link');
+
+            if (sesionActiva) {
+                // Acceso temporal a registro para poder probar altas con sesión activa.
+                if (navRegisterLink) navRegisterLink.style.display = '';
+                if (btnCerrarSesion) btnCerrarSesion.style.display = 'block';
+            } else {
+                if (navRegisterLink) navRegisterLink.style.display = '';
+                if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
+            }
+
+            renderProductosDestacados();
+        });
+
+        // El carrito y las compras están disponibles sin registro.
+        function verificarAccion(accion, event) {
+            if (event) event.preventDefault();
+            // El carrito está disponible sin registro; publicar requiere cuenta.
+            const destinos = {
+                vender: 'paginas/vender.html',
+                comprar: 'paginas/catalogo.html',
+                carrito: 'paginas/carrito.html'
+            };
+            const destino = destinos[accion];
+            if (destino) window.location.href = destino;
+        }
+
+        function obtenerProductosCatalogo() {
+            try {
+                const productos = JSON.parse(localStorage.getItem('productosDinamicos')) || [];
+                return Array.isArray(productos) ? productos : [];
+            } catch (error) {
+                console.error('No se pudieron leer los productos del catálogo:', error);
+                return [];
+            }
+        }
+
+        function escaparHtml(valor) {
+            return String(valor ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function renderProductosDestacados() {
+            const grid = document.getElementById('productGrid');
+            if (!grid) return;
+
+            const productos = obtenerProductosCatalogo().slice(0, 4);
+
+            if (!productos.length) {
+                grid.innerHTML = '<div class="empty-state">Aún no hay productos disponibles. Publica uno desde la sección de venta.</div>';
+                return;
+            }
+
+            grid.innerHTML = productos.map((prod) => {
+                const imagenes = Array.isArray(prod.imagenes) && prod.imagenes.length ? prod.imagenes : [(prod.imagen || 'https://via.placeholder.com/500x300?text=Producto')];
+                const titulo = prod.titulo || 'Producto';
+                const precio = Number(prod.precio || 0);
+                return `
+                    <div class="product-card">
+                        <img src="${escaparHtml(imagenes[0])}" alt="${escaparHtml(titulo)}" class="product-img">
+                        <div class="product-info">
+                            <h3 class="product-title">${escaparHtml(titulo)}</h3>
+                            <div class="product-price">$${precio.toLocaleString()}</div>
+                            ${prod.reservado ? '<div style="color:#b45309;font-weight:700;margin:0.35rem 0">Producto reservado</div>' : ''}
+                            <button class="btn-buy" onclick="window.location.href='paginas/catalogo.html?buscar=${encodeURIComponent(titulo)}'">Ver producto</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'productosDinamicos' || event.key === null) renderProductosDestacados();
+        });
+
+        const searchInput = document.querySelector('.search-container input');
+        const searchButton = document.querySelector('.search-container button');
+
+        function realizarBusqueda() {
+            if (!searchInput) return;
+            const termino = searchInput.value.trim();
+            if (termino !== "") {
+                window.location.href = `paginas/catalogo.html?buscar=${encodeURIComponent(termino)}`;
+            } else {
+                alert("Por favor, escribe el nombre de un producto para buscar.");
+            }
+        }
+
+        if (searchButton) searchButton.addEventListener('click', realizarBusqueda);
+        if (searchInput) searchInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                realizarBusqueda();
+            }
+        });
+
+        async function cerrarSesion() {
+            try {
+                await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+            } catch (error) {
+                // Limpia la sesión local incluso si el servidor está desconectado.
+            }
+            localStorage.removeItem('sesion_activa');
+            alert('Has cerrado sesión correctamente.');
+            window.location.reload();
+        }
+
+        // "Salir": cierra la página o la aplicación si el usuario lo confirma.
+        function salirApp(event) {
+            if (event) event.preventDefault();
+            if (!confirm('¿Seguro que quieres salir?')) {
+                return;
+            }
+            // Intenta cerrar la ventana (funciona si fue abierta por script).
+            window.close();
+            try {
+                // En la app Android (WebView) se cierra la actividad para salir.
+                if (window.AndroidSalir && typeof window.AndroidSalir.salir === 'function') {
+                    window.AndroidSalir.salir();
+                    return;
+                }
+            } catch (error) {
+                // Ignora si la interfaz nativa no está disponible.
+            }
+            // último recurso: volver al inicio de la aplicación.
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+            });
+        }
+    </script>
+
+</body>
+</html>

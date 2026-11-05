@@ -1,0 +1,281 @@
+/* ==========================================================================
+   COMPLEMENTO CSS: Estilos Exclusivos para la Vista de Vender y Panel de Gestión
+   ========================================================================== */
+
+/* Contenedor Principal del Panel de Venta */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2.5rem;
+}
+
+/* Tarjetas Contenedoras (Formulario y Catálogo) */
+.card-box {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+    border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.card-box h2 {
+    color: var(--text-main, #1f2937);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #f3f4f6;
+    padding-bottom: 0.75rem;
+}
+
+/* Campos del Formulario */
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: var(--text-main, #374151);
+    font-size: 0.95rem;
+}
+
+.form-group input, 
+.form-group textarea, 
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #fff;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus, 
+.form-group select:focus {
+    border-color: var(--success-color, #10b981);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.form-group textarea {
+    resize: vertical;
+    height: 90px;
+}
+
+/* Input de Archivo y Vista Previa */
+.file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+}
+
+.file-input-wrapper input[type="file"] {
+    cursor: pointer;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border: 1px dashed #d1d5db;
+}
+
+.preview-container {
+    margin-top: 0.75rem;
+    text-align: center;
+}
+
+.preview-img {
+    max-width: 110px;
+    max-height: 110px;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    object-fit: cover;
+    display: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Botón de Publicación / Actualización */
+.btn-submit {
+    background-color: var(--success-color, #10b981);
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 0.85rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: var(--success-hover, #059669);
+    transform: translateY(-2px);
+}
+
+/* ===== GRILLA Y TARJETAS DEL PANEL DE GESTIÓN (CATÁLOGO PROPIO) ===== */
+.manage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.manage-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.manage-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+
+.manage-info {
+    padding: 1rem;
+}
+
+.manage-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-main, #1f2937);
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.manage-price {
+    color: var(--primary-color, #2563eb);
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Botones de Edición y Borrado dentro de la tarjeta */
+.manage-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 1rem 1rem 1rem;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 0.45rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn-edit {
+    background-color: var(--warning-color, #f59e0b);
+    color: white;
+}
+
+.btn-delete {
+    background-color: var(--danger-color, #ef4444);
+    color: white;
+}
+
+.btn-action:hover {
+    opacity: 0.85;
+    transform: scale(1.02);
+}
+
+.empty-catalog {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-muted, #6b7280);
+    padding: 2.5rem;
+    font-style: italic;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px dashed #e5e7eb;
+}
+
+/* Diseño Responsivo para Pantallas Pequeñas */
+@media (max-width: 900px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+}
+.preview-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.preview-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    object-fit: cover;
+}
+/* Área de carga interactiva (Dropzone) */
+.upload-dropzone {
+    border: 2px dashed #cbd5e1;
+    background-color: #f8fafc;
+    padding: 1.2rem;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-dropzone:hover {
+    border-color: #10b981;
+    background-color: #f0fdf4;
+}
+
+.upload-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+}
+
+.upload-text {
+    font-size: 0.85rem;
+    color: #4b5563;
+}
+
+.upload-text span {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+/* Cuadrícula estética para las múltiples vistas previas */
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+.preview-wrapper {
+    position: relative;
+    width: 100%;
+    height: 70px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>TiendaLibre - Acceso y Registro</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 16px en móvil evita el zoom automático de iOS al enfocar un campo. */
+        input, button {
+            max-width: 100%;
+            font-family: inherit;
+        }
+
+        @media (max-width: 768px) {
+            input {
+                font-size: 16px !important;
+            }
+        }
+
+        .shop-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .shop-header h1 {
+            color: #2563eb;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .shop-header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            background-color: #ecf0f1;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: #ffffff;
+            color: #2563eb;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #dcdde1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-action:hover {
+            background-color: #1d4ed8;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        /* Botón "Salir": fijo arriba a la derecha de la pantalla. */
+        .btn-salir {
+            position: fixed;
+            top: 0.7rem;
+            right: 0.8rem;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0.4rem 0.9rem;
+            background-color: #6b7280;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-salir:hover { background-color: #4b5563; }
+
+        @media (max-width: 480px) {
+            body { align-items: flex-start; padding: 1rem; }
+            .shop-container { margin: auto 0; padding: 1.4rem; }
+            .shop-header h1 { font-size: 1.4rem; }
+            .tabs { margin-bottom: 1.2rem; }
+            .tab-btn { padding: .7rem .35rem; min-height: 44px; }
+            .btn-action { min-height: 48px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Botón "Salir" fijo arriba a la derecha. -->
+<button type="button" class="btn-salir" onclick="salirApp(event)" aria-label="Salir de la aplicación">Salir</button>
+
+<div class="shop-container">
+    <div class="shop-header">
+        <h1>TiendaLibre</h1>
+        <p>Registro obligatorio para acceder a la tienda</p>
+    </div>
+
+    <!-- Pestañas de Navegación -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('login')">Iniciar Sesión</button>
+        <button class="tab-btn" onclick="switchTab('register')">Registrarse</button>
+    </div>
+
+    <!-- Formulario 1: Iniciar Sesión -->
+    <form id="loginForm" class="form-section active" onsubmit="handleLogin(event)">
+        <div class="form-group">
+            <label for="loginEmail">Correo Electrónico</label>
+            <input type="email" id="loginEmail" placeholder="ejemplo@correo.com" required>
+        </div>
+        <div class="form-group">
+            <label for="loginPassword">Contraseña</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-action">Entrar a la Tienda</button>
+    </form>
+
+    <!-- Formulario 2: Registrarse -->
+    <form id="registerForm" class="form-section" onsubmit="handleRegister(event)">
+        <div class="form-group">
+            <label for="regName">Nombre y Apellido</label>
+            <input type="text" id="regName" placeholder="Juan Pérez" required>
+        </div>
+        <div class="form-group">
+            <label for="regEmail">Correo Electrónico</label>
+            <input type="email" id="regEmail" placeholder="ejemplo@correo.com" required>
+        </div>
+        <div class="form-group">
+            <label for="regPassword">Crea una Contraseña</label>
+            <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required>
+        </div>
+        <button type="submit" class="btn-action">Crear Cuenta y Entrar</button>
+    </form>
+
+    <div class="footer-note">
+        Si no tienes una cuenta o los datos son incorrectos, el acceso será denegado.
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modo = new URLSearchParams(window.location.search).get('modo');
+        if (modo === 'registro') switchTab('register');
+    });
+
+    // Limpiamos la sesión al entrar a la página de registro
+    function continuarDespuesDeAcceso() {
+        const destino = sessionStorage.getItem('destino_despues_registro');
+        sessionStorage.removeItem('destino_despues_registro');
+        window.location.href = destino && !/^(https?:|\/\/)/i.test(destino) ? destino : '../index.html';
+    }
+
+    // --- Cuentas locales (respaldo para la app sin servidor) ---
+    // La app Android abre la página como file:///android_asset/..., donde no existe
+    // el servidor de /api/. Con estas funciones el registro y el acceso funcionan
+    // igualmente, guardando las cuentas en el almacenamiento local del dispositivo.
+    function leerCuentasLocales() {
+        try {
+            const cuentas = JSON.parse(localStorage.getItem('cuentas_locales') || '[]');
+            return Array.isArray(cuentas) ? cuentas : [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function guardarCuentasLocales(cuentas) {
+        localStorage.setItem('cuentas_locales', JSON.stringify(cuentas));
+    }
+
+    // Comprueba si hay servidor disponible (en la app no lo hay).
+    function hayServidor() {
+        return /^https?:$/i.test(window.location.protocol);
+    }
+
+    async function enviarSolicitud(endpoint, datos) {
+        try {
+            const respuesta = await fetch(endpoint, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            let resultado;
+            try {
+                resultado = await respuesta.json();
+            } catch (error) {
+                throw new Error('El servidor respondió de forma inesperada. Reinicia el servidor e inténtalo de nuevo.');
+            }
+            if (!respuesta.ok) throw new Error(resultado.error || 'No se pudo completar la solicitud.');
+            return resultado;
+        } catch (error) {
+            if (error instanceof TypeError) {
+                throw new Error('No se pudo conectar con la base de datos. Inicia el proyecto con "py server.py" y vuelve a intentarlo.');
+            }
+            throw error;
+        }
+    }
+
+    function switchTab(tabName) {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const tabs = document.querySelectorAll('.tab-btn');
+
+        if (tabName === 'login') {
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+            tabs[0].classList.add('active');
+            tabs[1].classList.remove('active');
+        } else {
+            registerForm.classList.add('active');
+            loginForm.classList.remove('active');
+            tabs[1].classList.add('active');
+            tabs[0].classList.remove('active');
+        }
+    }
+
+    function correoValido(correo) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo) && correo.length <= 254;
+    }
+
+    async function handleLogin(event) {
+        event.preventDefault();
+        const emailInput = document.getElementById('loginEmail').value.trim().toLowerCase();
+        const passwordInput = document.getElementById('loginPassword').value;
+        if (!correoValido(emailInput)) {
+            alert('Escribe un correo electrónico válido.');
+            return;
+        }
+        // En la app (sin servidor) se valida contra las cuentas guardadas localmente.
+        if (!hayServidor()) {
+            const cuenta = leerCuentasLocales().find((c) => c.email === emailInput && c.password === passwordInput);
+            if (!cuenta) {
+                alert('No existe una cuenta con esos datos en este dispositivo. Regístrate primero.');
+                return;
+            }
+            const usuario = { name: cuenta.name, email: cuenta.email };
+            localStorage.setItem('sesion_activa', JSON.stringify(usuario));
+            continuarDespuesDeAcceso();
+            return;
+        }
+        try {
+            const resultado = await enviarSolicitud('/api/login', { email: emailInput, password: passwordInput });
+            localStorage.setItem('sesion_activa', JSON.stringify(resultado.user));
+            continuarDespuesDeAcceso();
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function handleRegister(event) {
+        event.preventDefault();
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim().toLowerCase();
+        const password = document.getElementById('regPassword').value;
+
+        if (!correoValido(email)) {
+            alert('Escribe un correo electrónico válido.');
+            return;
+        }
+
+        if (password.length < 6) {
+            alert('La contraseña debe tener al menos 6 caracteres.');
+            return;
+        }
+
+        // En la app (sin servidor) la cuenta se guarda en el dispositivo.
+        if (!hayServidor()) {
+            const cuentas = leerCuentasLocales();
+            if (cuentas.some((c) => c.email === email)) {
+                alert('Ya existe una cuenta con ese correo en este dispositivo. Inicia sesión.');
+                return;
+            }
+            cuentas.push({ name, email, password });
+            guardarCuentasLocales(cuentas);
+            const usuario = { name, email };
+            localStorage.setItem('sesion_activa', JSON.stringify(usuario));
+            alert('¡Cuenta creada con éxito!');
+            continuarDespuesDeAcceso();
+            return;
+        }
+        try {
+            const resultado = await enviarSolicitud('/api/register', { name, email, password });
+            localStorage.setItem('sesion_activa', JSON.stringify(resultado.user));
+            continuarDespuesDeAcceso();
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    // "Salir": cierra la página o la aplicación si el usuario lo confirma.
+    function salirApp(event) {
+        if (event) event.preventDefault();
+        if (!confirm('¿Seguro que quieres salir?')) return;
+        try {
+            if (window.AndroidSalir && typeof window.AndroidSalir.salir === 'function') {
+                window.AndroidSalir.salir();
+                return;
+            }
+        } catch (error) {
+            // La interfaz nativa no está disponible (navegador de escritorio).
+        }
+        window.close();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# --- Web / Python (despliegue en Render) ---
+__pycache__/
+*.py[cod]
+
+# Base de datos local: no debe subirse al repositorio.
+tablas/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs de compilación y capturas de prueba
+build_log.txt
+build-android-*.txt
+captura*.png
+
+# Herramientas de desarrollo
+.kotlin/
+.vscode/
+
+# Claves de firma de Android: no publicar.
+*.jks
+keystore.properties

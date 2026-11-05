@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Panel de Venta y Gestión - TiendaLibre</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+            animation: fadeInPage 0.5s ease-out;
+            overflow-x: hidden; /* Evita el desplazamiento horizontal en pantallas pequeñas */
+        }
+
+        /* Campos adaptables; 16px en móvil evita el zoom automático en iOS. */
+        input, select, textarea, button {
+            max-width: 100%;
+            font-family: inherit;
+        }
+
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            display: block;
+            height: 90px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        /* Botón "Salir": cierra la página/aplicación si el usuario lo desea. */
+        .btn-salir { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.4rem 0.9rem; background-color: #6b7280; color: #fff; border: none; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 0.95rem; cursor: pointer; white-space: nowrap; }
+        .btn-salir:hover { background-color: #4b5563; }
+
+        .btn-sell {
+            background-color: #10b981;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .btn-sell-icon { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border: 2px solid #d1fae5; border-radius: 10px; white-space: nowrap; }
+        .btn-sell-icon img { width: 20px; height: 20px; flex: 0 0 20px; object-fit: contain; display: block; }
+        .btn-sell-icon span { line-height: 1; }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2.5rem;
+        }
+
+        .card-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        h2 {
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .solicitud-item {
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #2563eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            background: #f8fafc;
+        }
+        .solicitud-item.atendida { border-left-color: #10b981; opacity: 0.8; }
+        .solicitud-item h3 { margin: 0 0 0.35rem; color: #1f2937; font-size: 1rem; }
+        .solicitud-item p { margin: 0.25rem 0; color: #4b5563; overflow-wrap: anywhere; }
+        .solicitud-item .btn-action { margin-top: 0.6rem; }
+        .solicitudes-vacias { color: #6b7280; padding: 0.75rem 0; }
+
+        .counter-badge {
+            font-size: 0.85rem;
+            background-color: #e5e7eb;
+            color: #374151;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .help-panel { margin: -0.5rem 0 1.25rem; padding: 0.85rem 1rem; border: 1px solid #bfdbfe; border-radius: 8px; background: #eff6ff; color: #1e3a8a; }
+        .help-panel summary { cursor: pointer; font-weight: 700; }
+        .help-panel ul { margin: 0.7rem 0 0 1.25rem; padding: 0; }
+        .help-panel li { margin: 0.35rem 0; }
+        /* Panel de ayuda: siempre visible y legible en cualquier pantalla. */
+        .help-ayuda {
+            max-width: 1200px;
+            margin: 1rem auto 0;
+            width: calc(100% - 2rem);
+        }
+        .help-ayuda > summary { list-style: none; white-space: normal; }
+        .help-ayuda > summary::-webkit-details-marker { display: none; }
+        .help-ayuda > summary::marker { content: ''; }
+        .help-ayuda[open] > summary { margin-bottom: 0.4rem; }
+        .help-ayuda > ul {
+            position: static;
+            width: auto;
+            max-height: none;
+            overflow: visible;
+            margin: 0.6rem 0 0 1.25rem;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+            color: #1e3a8a;
+        }
+        @media (max-width: 700px) {
+            .nav-container { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; padding: 0.75rem 0.6rem; }
+            .logo img { height: 72px; }
+            /* Menú deslizable, elegante: borde redondeado con relieve y sombra. */
+            .nav-links {
+                width: 100%; flex-wrap: nowrap; justify-content: flex-start;
+                gap: 0.35rem; font-size: 0.92rem;
+                overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+                padding: 0.35rem 0.45rem;
+                background: rgba(255, 255, 255, 0.55);
+                border: 1px solid rgba(255, 255, 255, 0.75);
+                border-radius: 12px;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -2px 4px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.08);
+            }
+            .nav-links::-webkit-scrollbar { display: none; }
+            .nav-links li { flex: 0 0 auto; }
+            .nav-links a {
+                min-height: 42px; display: inline-flex; align-items: center; white-space: nowrap;
+                padding: 0 0.7rem; border-radius: 9px; transition: background .2s, color .2s;
+            }
+            .nav-links a:hover { background: rgba(37, 99, 235, 0.1); }
+            .btn-sell-icon { min-height: 40px; padding: 0.2rem 0.45rem; gap: 0.25rem; }
+            .btn-sell-icon img { width: 18px; height: 18px; flex-basis: 18px; }
+            .help-ayuda { width: calc(100% - 1.5rem); margin-top: 0.75rem; }
+        }
+        @media (max-width: 420px) {
+            .logo img { height: 64px; }
+            .nav-links { gap: 0.2rem 0.5rem; font-size: 0.84rem; }
+            .btn-sell-icon { min-height: 38px; padding: 0.2rem 0.4rem; }
+            .btn-sell-icon img { width: 16px; height: 16px; flex-basis: 16px; }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 90px;
+        }
+
+        /* Zona para subir archivos */
+        .upload-dropzone {
+            border: 2px dashed #10b981;
+            background-color: #f0fdf4;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-dropzone:hover {
+            background-color: #dcfce7;
+            border-color: #059669;
+        }
+
+        .upload-dropzone[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
+        .upload-dropzone.drag-over { background-color: #dcfce7; border-color: #059669; }
+        .upload-dropzone[aria-disabled="true"]:hover { background-color: #f0fdf4; border-color: #10b981; }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .upload-text {
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+
+        .upload-text span {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        /* Cuadrícula de previsualización ordenada */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+            gap: 0.6rem;
+            margin-top: 0.8rem;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 100%;
+            height: 75px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-delete {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-delete:hover {
+            background: #dc2626;
+        }
+
+        .btn-submit {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Panel de gestión propio */
+        .manage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .manage-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .manage-img-container {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            background-color: #f3f4f6;
+        }
+
+        .manage-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .img-counter-tag {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .manage-info {
+            padding: 1rem;
+        }
+
+        .manage-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.3rem;
+        }
+
+        .manage-price {
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .manage-phone {
+            font-size: 0.85rem;
+            color: #4b5563;
+            margin-bottom: 0.4rem;
+        }
+
+        .manage-desc {
+            font-size: 0.85rem;
+            color: #6b7280;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .manage-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0 1rem 1rem 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.4rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .btn-edit {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .empty-catalog {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-container { margin: 1.25rem auto; padding: 0 .75rem; gap: 1rem; }
+            .card-box { padding: 1.1rem; }
+            h2 { font-size: 1.25rem; gap: .5rem; }
+            .manage-grid { grid-template-columns: minmax(0, 1fr); }
+            .help-menu > ul { right: auto; left: 0; }
+            .btn-submit { min-height: 48px; }
+            .btn-action { min-height: 42px; }
+            .upload-dropzone { padding: 1.15rem .9rem; }
+            .preview-grid { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
+        }
+
+        footer {
+            background-color: #1f2937;
+            color: #9ca3af;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+       <div class="nav-container">
+            <a href="../index.html" class="logo" aria-label="Tienda Libre SV - Inicio">
+                <img src="../banner/LOGO1.png" alt="Tienda Libre SV">
+            </a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="vender.html" class="btn-sell btn-sell-icon" aria-label="Vender un producto" title="Vender un producto"><img src="../logo/icono1.png" alt=""><span>Vender</span></a></li>
+                <li><button type="button" class="btn-salir" onclick="salirApp(event)" aria-label="Salir de la aplicación">Salir</button></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Ayuda, fuera del menú para que no desborde en pantallas pequeñas -->
+    <details class="help-panel help-ayuda">
+        <summary>❔ Ayuda para publicar un producto</summary>
+        <ul>
+            <li>Completa los campos en orden; cada sección se habilita al terminar la anterior.</li>
+            <li>El código de barras es opcional. Puedes dejarlo vacío o escanearlo con un lector conectado.</li>
+            <li>Ingresa el precio con hasta 5 dígitos y, si hace falta, hasta 2 decimales usando punto.</li>
+            <li>El teléfono puede tener 8 dígitos locales o incluir el prefijo 503. Se guarda listo para WhatsApp.</li>
+            <li>Selecciona al menos una foto JPG, PNG, GIF, BMP o AVIF; WebP no está permitido.</li>
+            <li>Escribe una descripción clara y luego pulsa «Guardar y Publicar».</li>
+        </ul>
+    </details>
+
+    <main class="dashboard-container">
+
+        <!-- Columna 1: Formulario -->
+        <div class="card-box">
+            <h2>Publicar Producto</h2>
+            <form id="formVender">
+                <input type="hidden" id="editIndex" value="">
+
+                <div class="form-group">
+                    <label for="titulo">Nombre del Producto</label>
+                    <input type="text" id="titulo" required placeholder="Ej. Lámpara LED">
+                </div>
+
+                <div class="form-group">
+                    <label for="codigoBarras">Código de barras (opcional)</label>
+                    <input type="text" id="codigoBarras" autocomplete="off" placeholder="Enfoca aquí y escanea el código">
+                    <small>También puedes escribirlo manualmente. Usa un lector de códigos conectado al dispositivo.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoria">Categoría del producto</label>
+                    <select id="categoria" required>
+                        <option value="" selected disabled>Selecciona una categoría</option>
+                        <option value="herramientas">Herramientas</option>
+                        <option value="ropa">Ropa</option>
+                        <option value="cosmeticos">Cosméticos</option>
+                        <option value="fontaneria">Fontanería</option>
+                        <option value="panaderias">Panaderías</option>
+                        <option value="pupuserias">Pupuserías</option>
+                        <option value="electrodomesticos">Electrodomésticos</option>
+                        <option value="electronica">Electrónica</option>
+                        <option value="otros" selected>Otros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="condicion">Estado del producto</label>
+                    <select id="condicion" required>
+                        <option value="" selected disabled>Selecciona el estado</option>
+                        <option value="nuevo">Nuevo</option>
+                        <option value="segunda-mano">De segunda mano</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio de Venta ($)</label>
+                    <input type="text" id="precio" required inputmode="decimal" pattern="[0-9]{1,5}(\.[0-9]{1,2})?" title="Ingresa hasta 5 números enteros y hasta 2 decimales usando punto" placeholder="Ej. 12345.50">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Número de Teléfono de Contacto</label>
+                    <input type="tel" id="telefono" required inputmode="numeric" autocomplete="tel" maxlength="11" pattern="([0-9]{8}|503[0-9]{8})" title="Ingresa 8 dígitos locales o 503 seguido de 8 dígitos" placeholder="Ej. 70000000 o 50370000000">
+                </div>
+
+                <div class="form-group">
+                    <label>Fotos del Artículo (Puedes subir varias imágenes)</label>
+                    <div class="upload-dropzone" role="button" tabindex="0" aria-label="Seleccionar o arrastrar fotos del producto">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">
+                            <span>Haz clic para seleccionar</span> o arrastra tus fotos aquí
+                        </div>
+                        <input type="file" id="imagenArchivo" accept=".jpg,.jpeg,.png,.gif,.bmp,.avif" multiple style="display: none;">
+                    </div>
+                    <small>Formatos admitidos: JPG, PNG, GIF, BMP y AVIF. WebP no permitido.</small>
+                    <div class="preview-grid" id="previewContainer"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="animacion">Efecto de Animación Visual</label>
+                    <select id="animacion" required>
+                        <option value="" selected disabled>Selecciona un efecto</option>
+                        <option value="anim-zoom">Efecto Zoom al Pasar Mouse</option>
+                        <option value="anim-slide">Efecto Elevación (Slide Up)</option>
+                        <option value="anim-glow">Efecto Brillo Neón (Glow)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción del Producto</label>
+                    <textarea id="descripcion" required placeholder="Escribe aquí los detalles únicos de tu producto..."></textarea>
+                    <small>Al editar el producto puedes cambiar esta descripción antes de actualizarlo.</small>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnGuardar">Guardar y Publicar</button>
+            </form>
+        </div>
+
+        <!-- Columna 2: Panel de Gestión Local -->
+        <div class="card-box">
+            <h2>Mensajes de compradores <span class="counter-badge">Sin conexión</span></h2>
+            <p class="solicitudes-vacias">La recepción de consultas en esta página está desconectada del servidor. Los compradores pueden contactar por WhatsApp desde el catálogo.</p>
+            <h2>
+                Mi Catálogo Activo
+                <span class="counter-badge" id="contadorProductos">0 / 5</span>
+            </h2>
+            <div class="manage-grid" id="manageGrid">
+                <!-- Se llena mediante JavaScript -->
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 TiendaLibre. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const formVender = document.getElementById('formVender');
+            const inputArchivos = document.getElementById('imagenArchivo');
+            const previewContainer = document.getElementById('previewContainer');
+            const manageGrid = document.getElementById('manageGrid');
+            const editIndex = document.getElementById('editIndex');
+            const btnGuardar = document.getElementById('btnGuardar');
+            const contadorProductos = document.getElementById('contadorProductos');
+            const campoTelefono = document.getElementById('telefono');
+            function normalizarTelefonoWhatsApp(valor) {
+                const digitos = String(valor || '').replace(/\D/g, '');
+                if (/^[0-9]{8}$/.test(digitos)) return '503' + digitos;
+                if (/^503[0-9]{8}$/.test(digitos)) return digitos;
+                return '';
+            }
+
+            campoTelefono.addEventListener('input', () => {
+                campoTelefono.value = campoTelefono.value.replace(/\D/g, '').slice(0, 11);
+            });
+            const campoPrecio = document.getElementById('precio');
+            campoPrecio.addEventListener('input', () => {
+                const valor = campoPrecio.value.replace(/[^0-9.]/g, '');
+                const punto = valor.indexOf('.');
+                if (punto === -1) {
+                    campoPrecio.value = valor.slice(0, 5);
+                    return;
+                }
+                const enteros = valor.slice(0, punto).slice(0, 5);
+                const decimales = valor.slice(punto + 1).replace(/\./g, '').slice(0, 2);
+                campoPrecio.value = enteros + '.' + decimales;
+            });
+
+            let imagenesSeleccionadas = [];
+            const gruposFormulario = Array.from(formVender.querySelectorAll('.form-group'))
+                .filter((grupo) => !grupo.querySelector('#codigoBarras'));
+
+            function grupoEstaCompleto(grupo) {
+                if (grupo.querySelector('#previewContainer')) return imagenesSeleccionadas.length > 0;
+                const controles = Array.from(grupo.querySelectorAll('input, select, textarea'));
+                return controles.every((control) => control.checkValidity() && String(control.value).trim() !== '');
+            }
+
+            function actualizarCamposHabilitados() {
+                let habilitarSiguiente = true;
+                gruposFormulario.forEach((grupo) => {
+                    grupo.querySelectorAll('input, select, textarea').forEach((control) => {
+                        control.disabled = !habilitarSiguiente;
+                    });
+                    grupo.setAttribute('aria-disabled', String(!habilitarSiguiente));
+                    const zonaCarga = grupo.querySelector('.upload-dropzone');
+                    if (zonaCarga) zonaCarga.setAttribute('aria-disabled', String(!habilitarSiguiente));
+                    if (habilitarSiguiente && !grupoEstaCompleto(grupo)) habilitarSiguiente = false;
+                });
+            }
+
+            gruposFormulario.forEach((grupo) => {
+                grupo.addEventListener('input', actualizarCamposHabilitados);
+                grupo.addEventListener('change', actualizarCamposHabilitados);
+            });
+            actualizarCamposHabilitados();
+            const LIMITE_PRODUCTOS = 5;
+            const nombresCategoria = {
+                herramientas: 'Herramientas', ropa: 'Ropa', cosmeticos: 'Cosméticos',
+                fontaneria: 'Fontanería', panaderias: 'Panaderías', pupuserias: 'Pupuserías',
+                electrodomesticos: 'Electrodomésticos', electronica: 'Electrónica', otros: 'Otros'
+            };
+
+            function esImagenWebp(src) {
+                return /^data:image\/webp/i.test(String(src || '')) || /\.webp(?:[?#].*)?$/i.test(String(src || ''));
+            }
+
+            // Gestión de ID de usuario único para control de permisos
+            function obtenerClaveVendedorActual() {
+                try {
+                    const usuario = JSON.parse(localStorage.getItem('sesion_activa') || 'null');
+                    if (usuario && usuario.email) return 'email:' + usuario.email.trim().toLowerCase();
+                } catch (error) {
+                    // Usa una identidad an�nima para este navegador.
+                }
+                let visitante = localStorage.getItem('vendedor_anonimo_id');
+                if (!visitante) {
+                    visitante = 'visitante:' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random());
+                    localStorage.setItem('vendedor_anonimo_id', visitante);
+                }
+                return visitante;
+            }
+
+            const usuarioActualId = obtenerClaveVendedorActual();
+            function leerListaStorage(clave) {
+                try {
+                    const lista = JSON.parse(localStorage.getItem(clave) || '[]');
+                    return Array.isArray(lista) ? lista : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            function esMismoProducto(a, b) {
+                if (!a || !b) return false;
+                if (a.id && b.id) return String(a.id) === String(b.id);
+                const tituloA = String(a.titulo || a.nombre || '').trim().toLowerCase();
+                const tituloB = String(b.titulo || b.nombre || '').trim().toLowerCase();
+                const mismoVendedor = !a.vendedorId || !b.vendedorId || a.vendedorId === b.vendedorId;
+                const telefonoA = String(a.telefono || '').replace(/\D/g, '');
+                const telefonoB = String(b.telefono || '').replace(/\D/g, '');
+                return tituloA === tituloB && Number(a.precio || 0) === Number(b.precio || 0)
+                    && mismoVendedor && (!telefonoA || !telefonoB || telefonoA === telefonoB);
+            }
+
+            function actualizarImagenesEnCarritos(producto, imagenes) {
+                ['carritoCompras', 'carrito'].forEach((clave) => {
+                    const carrito = leerListaStorage(clave).map((item) => {
+                        if (!esMismoProducto(item, producto)) return item;
+                        const actualizado = { ...item, imagenes: [...imagenes] };
+                        if (imagenes.length) actualizado.imagen = imagenes[0];
+                        else delete actualizado.imagen;
+                        return actualizado;
+                    });
+                    localStorage.setItem(clave, JSON.stringify(carrito));
+                });
+            }
+
+            function quitarProductoDeCarritos(producto) {
+                ['carritoCompras', 'carrito'].forEach((clave) => {
+                    const carrito = leerListaStorage(clave).filter((item) => !esMismoProducto(item, producto));
+                    localStorage.setItem(clave, JSON.stringify(carrito));
+                });
+            }
+
+            // Manejo de carga de múltiples archivos de imagen para un mismo artículo
+            const zonaCarga = inputArchivos.closest('.upload-dropzone');
+
+            function procesarArchivos(archivos) {
+                let encontroWebp = false;
+                Array.from(archivos).forEach((archivo) => {
+                    const esWebp = archivo.type === 'image/webp' || /\.webp$/i.test(archivo.name);
+                    if (esWebp) { encontroWebp = true; return; }
+                    const formatoAdmitido = /\.(jpe?g|png|gif|bmp|avif)$/i.test(archivo.name);
+                    if (!archivo.type.startsWith('image/') && !formatoAdmitido) return;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        imagenesSeleccionadas.push(event.target.result);
+                        renderizarPreviews();
+                        actualizarCamposHabilitados();
+                    };
+                    reader.onerror = () => alert('No se pudo leer una de las imágenes seleccionadas.');
+                    reader.readAsDataURL(archivo);
+                });
+                if (encontroWebp) alert('No se permiten imágenes WebP. Usa JPG, PNG, GIF, BMP o AVIF.');
+            }
+
+            zonaCarga.addEventListener('click', (event) => {
+                if (event.target === inputArchivos) return;
+                if (!inputArchivos.disabled) inputArchivos.click();
+            });
+            zonaCarga.addEventListener('keydown', (event) => {
+                if (!inputArchivos.disabled && (event.key === 'Enter' || event.key === ' ')) {
+                    event.preventDefault();
+                    inputArchivos.click();
+                }
+            });
+            zonaCarga.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                if (!inputArchivos.disabled) zonaCarga.classList.add('drag-over');
+            });
+            zonaCarga.addEventListener('dragleave', () => zonaCarga.classList.remove('drag-over'));
+            zonaCarga.addEventListener('drop', (event) => {
+                event.preventDefault();
+                zonaCarga.classList.remove('drag-over');
+                if (!inputArchivos.disabled) procesarArchivos(event.dataTransfer.files);
+            });
+            inputArchivos.addEventListener('change', (event) => {
+                procesarArchivos(event.target.files);
+                inputArchivos.value = '';
+            });
+
+            window.renderizarPreviews = function() {
+                previewContainer.innerHTML = '';
+                imagenesSeleccionadas.forEach((imgSrc, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'preview-item';
+                    item.innerHTML = `
+                        <img src="${imgSrc}" class="preview-img" alt="Vista previa">
+                        <button type="button" class="preview-delete" onclick="eliminarImagenPrevia(${index})">&times;</button>
+                    `;
+                    previewContainer.appendChild(item);
+                });
+            }
+
+            window.eliminarImagenPrevia = function(index) {
+                imagenesSeleccionadas.splice(index, 1);
+                renderizarPreviews();
+                actualizarCamposHabilitados();
+            }
+
+            // Cargar y mostrar productos activos en el panel de gestión
+            function cargarGestion() {
+                const productos = leerListaStorage('productosDinamicos');
+                manageGrid.innerHTML = '';
+
+                const productosDelUsuario = productos.filter(p => p.vendedorId === usuarioActualId);
+                contadorProductos.textContent = `${productosDelUsuario.length} / ${LIMITE_PRODUCTOS}`;
+
+                if (productosDelUsuario.length >= LIMITE_PRODUCTOS && editIndex.value === '') {
+                    btnGuardar.disabled = true;
+                    btnGuardar.textContent = 'Alcanzaste el límite de 5 productos';
+                } else if (editIndex.value === '') {
+                    btnGuardar.disabled = false;
+                    btnGuardar.textContent = 'Guardar y Publicar';
+                }
+
+                if (productos.length === 0) {
+                    manageGrid.innerHTML = '<div class="empty-catalog">No hay productos publicados todavía.</div>';
+                    return;
+                }
+
+                productos.forEach((prod, index) => {
+                    const imagenes = Array.isArray(prod.imagenes) && prod.imagenes.length ? prod.imagenes : (prod.imagen ? [prod.imagen] : []);
+                    const portada = imagenes.length > 0 ? imagenes[0] : 'https://via.placeholder.com/200?text=Sin+Imagen';
+                    const totalFotos = imagenes.length;
+
+                    const esPropietario = prod.vendedorId === usuarioActualId;
+
+                    const card = document.createElement('div');
+                    card.className = 'manage-card';
+                    card.innerHTML = `
+                        <div class="manage-img-container">
+                            <img src="${portada}" alt="${prod.titulo}" class="manage-img">
+                            ${totalFotos > 1 ? `<span class="img-counter-tag">📷 ${totalFotos} fotos</span>` : ''}
+                        </div>
+                        <div class="manage-info">
+                            <div class="manage-title">${prod.titulo}</div>
+                            <div class="manage-price">$${Number(prod.precio).toFixed(2)}</div>
+                            ${prod.reservado ? '<div class="manage-phone" style="color:#b45309;font-weight:700">Producto reservado</div>' : ''}
+                            <div class="manage-phone">Categoría: ${nombresCategoria[prod.categoria || 'otros'] || 'Otros'}</div>
+                            <div class="manage-phone">📞 ${prod.telefono || 'No especificado'}</div>
+                            <div class="manage-desc">${prod.descripcion}</div>
+                        </div>
+                        <div class="manage-actions">
+                            ${esPropietario ? `
+                                <button class="btn-action btn-edit" onclick="prepararEdicion(${index})">Editar</button>
+                                <button class="btn-action btn-delete" onclick="eliminarProducto(${index})">Eliminar</button>
+                                ${prod.reservado ? `<button class="btn-action" onclick="liberarReserva(${index})">Liberar reserva</button>` : ''}
+                            ` : `
+                                <span style="font-size: 0.8rem; color: #9ca3af; text-align: center; width: 100%; padding: 0.4rem;">Solo lectura (Ajeno)</span>
+                            `}
+                        </div>
+                    `;
+                    manageGrid.appendChild(card);
+                });
+            }
+
+            window.liberarReserva = function(index) {
+                const productos = leerListaStorage('productosDinamicos');
+                const prod = productos[index];
+                if (!prod || prod.vendedorId !== usuarioActualId || !prod.reservado) return;
+                productos[index] = { ...prod, reservado: false };
+                delete productos[index].fechaReserva;
+                localStorage.setItem('productosDinamicos', JSON.stringify(productos));
+                ['carritoCompras', 'carrito'].forEach((clave) => {
+                    const carrito = leerListaStorage(clave).map((item) => esMismoProducto(item, prod) ? { ...item, reservado: false } : item);
+                    localStorage.setItem(clave, JSON.stringify(carrito));
+                });
+                cargarGestion();
+            };
+
+            // Guardar o Actualizar el producto en LocalStorage
+            formVender.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                if (imagenesSeleccionadas.length === 0) {
+                    alert('Por favor, selecciona al menos una imagen para tu artículo.');
+                    return;
+                }
+                if (imagenesSeleccionadas.some(esImagenWebp)) {
+                    alert('No se permiten imágenes WebP. Elimina esa foto y selecciona otra.');
+                    return;
+                }
+
+                const titulo = document.getElementById('titulo').value.trim();
+                const codigoBarras = document.getElementById('codigoBarras').value.trim();
+                const categoria = document.getElementById('categoria').value;
+                const condicion = document.getElementById('condicion').value;
+                const precio = document.getElementById('precio').value.trim();
+                const telefono = normalizarTelefonoWhatsApp(campoTelefono.value);
+                if (!telefono) {
+                    alert('Ingresa un teléfono válido: 8 dígitos locales o 503 seguido de 8 dígitos.');
+                    campoTelefono.focus();
+                    return;
+                }
+                campoTelefono.value = telefono;
+                const animacion = document.getElementById('animacion').value;
+                const descripcion = document.getElementById('descripcion').value.trim();
+                const ubicacion = document.getElementById('ubicacion')?.value?.trim() || 'Ubicación Local';
+
+                let productos = leerListaStorage('productosDinamicos');
+                const indexEdit = editIndex.value;
+
+                const productosDelUsuario = productos.filter(p => p.vendedorId === usuarioActualId);
+                if (indexEdit === '' && productosDelUsuario.length >= LIMITE_PRODUCTOS) {
+                    alert('Has alcanzado el límite máximo permitido de 5 productos propios.');
+                    return;
+                }
+
+                const productoBase = {
+                    titulo,
+                    codigoBarras,
+                    categoria,
+                    condicion,
+                    precio,
+                    telefono,
+                    animacion,
+                    descripcion,
+                    imagenes: imagenesSeleccionadas,
+                    imagen: imagenesSeleccionadas[0],
+                    vendedorId: usuarioActualId,
+                    ubicacion,
+                    fechaPublicacion: new Date().toISOString()
+                };
+
+                if (indexEdit !== '') {
+                    const productoAnterior = productos[Number(indexEdit)];
+                    productos[indexEdit] = {
+                        ...productos[indexEdit],
+                        ...productoBase
+                    };
+                    if (productoAnterior) actualizarImagenesEnCarritos(productoAnterior, imagenesSeleccionadas);
+                    editIndex.value = '';
+                    btnGuardar.textContent = 'Guardar y Publicar';
+                } else {
+                    productos.push(productoBase);
+                }
+
+                localStorage.setItem('productosDinamicos', JSON.stringify(productos));
+                formVender.reset();
+                imagenesSeleccionadas = [];
+                previewContainer.innerHTML = '';
+                actualizarCamposHabilitados();
+                editIndex.value = '';
+                btnGuardar.textContent = 'Guardar y Publicar';
+
+                cargarGestion();
+                alert('¡Artículo guardado con éxito en el catálogo!');
+                window.location.href = 'catalogo.html';
+            });
+
+            window.prepararEdicion = function(index) {
+                const productos = leerListaStorage('productosDinamicos');
+                const prod = productos[index];
+
+                if (!prod) return;
+
+                if (prod.vendedorId !== usuarioActualId) {
+                    alert('No tienes permisos para editar este producto.');
+                    return;
+                }
+
+                document.getElementById('titulo').value = prod.titulo;
+                document.getElementById('codigoBarras').value = prod.codigoBarras || '';
+                document.getElementById('categoria').value = prod.categoria || 'otros';
+                document.getElementById('condicion').value = prod.condicion || 'nuevo';
+                document.getElementById('precio').value = prod.precio;
+                document.getElementById('telefono').value = prod.telefono || '';
+                document.getElementById('animacion').value = prod.animacion || 'anim-zoom';
+                document.getElementById('descripcion').value = prod.descripcion;
+                actualizarCamposHabilitados();
+
+                editIndex.value = index;
+                btnGuardar.disabled = false;
+                btnGuardar.textContent = 'Actualizar Producto';
+
+                imagenesSeleccionadas = Array.isArray(prod.imagenes) && prod.imagenes.length ? [...prod.imagenes] : (prod.imagen ? [prod.imagen] : []);
+                renderizarPreviews();
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            window.eliminarProducto = function(index) {
+                let productos = leerListaStorage('productosDinamicos');
+                const prod = productos[index];
+
+                if (!prod) return;
+
+                if (prod.vendedorId !== usuarioActualId) {
+                    alert('No tienes permisos para eliminar este producto.');
+                    return;
+                }
+
+                if (confirm('¿Estás seguro de que deseas eliminar este artículo?')) {
+                    quitarProductoDeCarritos(prod);
+                    productos.splice(index, 1);
+                    localStorage.setItem('productosDinamicos', JSON.stringify(productos));
+                    cargarGestion();
+                }
+            }
+
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'productosDinamicos' || event.key === null) cargarGestion();
+            });
+
+            cargarGestion();
+        });
+
+        // "Salir": cierra la página o la aplicación si el usuario lo confirma.
+        function salirApp(event) {
+            if (event) event.preventDefault();
+            if (!confirm('¿Seguro que quieres salir?')) return;
+            try {
+                if (window.AndroidSalir && typeof window.AndroidSalir.salir === 'function') {
+                    window.AndroidSalir.salir();
+                    return;
+                }
+            } catch (error) {
+                // La interfaz nativa no está disponible (navegador de escritorio).
+            }
+            window.close();
+        }
+    </script>
+</body>
+</html>

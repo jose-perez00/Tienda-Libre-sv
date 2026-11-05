@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mensajes del vendedor - Tienda Libre</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { margin: 0; background: #f4f6f9; color: #1f2937; line-height: 1.6; }
+        header { background: #fff; box-shadow: 0 2px 8px #00000012; }
+        nav { max-width: 1000px; margin: auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; gap: 1rem; }
+        nav a { color: #1d4ed8; font-weight: 700; text-decoration: none; }
+        main { width: min(850px, calc(100% - 2rem)); margin: 2.5rem auto; }
+        .panel { background: #fff; padding: clamp(1.2rem, 4vw, 2rem); border-radius: 14px; box-shadow: 0 8px 28px #1f293710; }
+        h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2rem); }
+        .intro { margin: .4rem 0 1.2rem; color: #4b5563; }
+        .cuenta { margin: 0 0 1.2rem; color: #1d4ed8; font-weight: 700; overflow-wrap: anywhere; }
+        .lista { display: grid; gap: 1rem; }
+        .mensaje { border: 1px solid #dbe3ef; border-left: 5px solid #2563eb; border-radius: 9px; padding: 1rem; }
+        .mensaje.atendido { border-left-color: #10b981; background: #f8fffb; }
+        .mensaje h2 { margin: 0 0 .35rem; font-size: 1.15rem; }
+        .mensaje p { margin: .35rem 0; overflow-wrap: anywhere; }
+        .fecha { color: #64748b; font-size: .9rem; }
+        .boton { border: 0; border-radius: 7px; padding: .7rem .9rem; background: #2563eb; color: #fff; font-weight: 700; cursor: pointer; }
+        .boton:hover { background: #1d4ed8; }
+        .boton:disabled { background: #9ca3af; cursor: wait; }
+        .boton.eliminar { margin-left: .5rem; background: #dc2626; }
+        .boton.eliminar:hover { background: #b91c1c; }
+        .actualizar { margin: 0 0 1rem; border: 1px solid #2563eb; border-radius: 7px; padding: .55rem .8rem; background: #fff; color: #1d4ed8; font-weight: 700; cursor: pointer; }
+        .actualizar:hover { background: #eff6ff; }
+
+        /* Botón "Salir": cierra la página/aplicación si el usuario lo desea. */
+        .btn-salir { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .5rem .9rem; background-color: #6b7280; color: #fff; border: none; border-radius: 7px; font-family: inherit; font-weight: 700; font-size: .95rem; cursor: pointer; white-space: nowrap; }
+        .btn-salir:hover { background-color: #4b5563; }
+
+        .estado { padding: .8rem; border-radius: 7px; background: #eff6ff; color: #1e40af; }
+        .estado.error { background: #fee2e2; color: #991b1b; }
+        [hidden] { display: none !important; }
+
+        /* La fila de datos y botones de cada mensaje se apila en pantallas pequeñas. */
+        .acciones { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+        .boton.eliminar { margin-left: 0; }
+
+        /* 16px en móvil evita el zoom automático de iOS al enfocar un campo. */
+        input, select, textarea, button {
+            max-width: 100%;
+            font-family: inherit;
+        }
+
+        @media (max-width: 520px) {
+            nav {
+                flex-direction: row; flex-wrap: nowrap; justify-content: flex-start;
+                align-items: center; gap: .35rem; padding: .5rem .6rem;
+                overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+                margin: .5rem .6rem 0;
+                background: rgba(255, 255, 255, 0.75);
+                border: 1px solid rgba(255, 255, 255, 0.9);
+                border-radius: 12px;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -2px 4px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.08);
+            }
+            nav::-webkit-scrollbar { display: none; }
+            nav a, nav .btn-salir {
+                min-height: 44px; display: inline-flex; align-items: center;
+                white-space: nowrap; padding: 0 0.7rem; border-radius: 9px;
+                transition: background .2s, color .2s;
+            }
+            nav a:hover { background: rgba(37, 99, 235, 0.1); }
+            main { margin: 1.25rem auto; width: calc(100% - 1.25rem); }
+            .boton { width: 100%; margin: .35rem 0 0; min-height: 44px; }
+            .boton.eliminar { margin-left: 0; }
+            .actualizar { width: 100%; min-height: 44px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav aria-label="Navegaci&oacute;n principal">
+            <a href="../index.html">Tienda Libre</a>
+            <a href="catalogo.html">Volver al cat&aacute;logo</a>
+            <button type="button" class="btn-salir" onclick="salirApp(event)" aria-label="Salir de la aplicaci&oacute;n">Salir</button>
+        </nav>
+    </header>
+    <main id="contenido" hidden>
+        <section class="panel" aria-labelledby="titulo">
+            <h1 id="titulo">Consultas de disponibilidad</h1>
+            <p class="intro">Aqu&iacute; aparecen los mensajes de compradores que preguntan si un producto sigue disponible.</p>
+            <p class="cuenta" id="correoVendedor"></p>
+            <button class="actualizar" id="btnActualizar" type="button">Actualizar mensajes</button>
+            <p class="estado" id="estadoBandeja" role="status" aria-live="polite">Cargando mensajes...</p>
+            <div class="lista" id="listaMensajes"></div>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const contenido = document.getElementById('contenido');
+            const correoVendedor = document.getElementById('correoVendedor');
+            const estadoBandeja = document.getElementById('estadoBandeja');
+            const listaMensajes = document.getElementById('listaMensajes');
+            const btnActualizar = document.getElementById('btnActualizar');
+
+            function mostrarError(mensaje) {
+                estadoBandeja.textContent = mensaje;
+                estadoBandeja.className = 'estado error';
+                estadoBandeja.hidden = false;
+            }
+
+            try {
+                const respuestaSesion = await fetch('/api/session', { cache: 'no-store', credentials: 'same-origin' });
+                if (respuestaSesion.status === 401) {
+                    sessionStorage.setItem('destino_despues_registro', 'proveedor.html');
+                    window.location.href = 'registrarse1.html';
+                    return;
+                }
+                if (!respuestaSesion.ok) throw new Error('No se pudo verificar la cuenta.');
+                const sesion = await respuestaSesion.json();
+                correoVendedor.textContent = `Bandeja de: ${sesion.user.email}`;
+                contenido.hidden = false;
+            } catch (error) {
+                mostrarError('No se pudo conectar con el servidor de cuentas. Inicia el sitio con "py server.py".');
+                return;
+            }
+
+            async function cargarMensajes() {
+                try {
+                    const respuesta = await fetch('/api/messages', { cache: 'no-store', credentials: 'same-origin' });
+                    if (respuesta.status === 401) {
+                        sessionStorage.setItem('destino_despues_registro', 'proveedor.html');
+                        window.location.href = 'registrarse1.html';
+                        return;
+                    }
+                    if (!respuesta.ok) throw new Error('No se pudieron cargar los mensajes.');
+                    const datos = await respuesta.json();
+                    const mensajes = (Array.isArray(datos.messages) ? datos.messages : [])
+                        .filter((item) => /disponib/i.test(String(item.message || '')));
+                    listaMensajes.replaceChildren();
+                    if (!mensajes.length) {
+                        estadoBandeja.textContent = 'A\u00fan no has recibido consultas de disponibilidad.';
+                        estadoBandeja.hidden = false;
+                        return;
+                    }
+                    estadoBandeja.hidden = true;
+                    mensajes.forEach((item) => {
+                        const tarjeta = document.createElement('article');
+                        tarjeta.className = `mensaje${item.attended ? ' atendido' : ''}`;
+                        const tituloProducto = document.createElement('h2');
+                        tituloProducto.textContent = item.product || 'Producto consultado';
+                        tarjeta.appendChild(tituloProducto);
+                        const pregunta = document.createElement('p');
+                        pregunta.textContent = item.message;
+                        tarjeta.appendChild(pregunta);
+                        const precio = document.createElement('p');
+                        precio.textContent = `Precio publicado: $${Number(item.price || 0).toFixed(2)}`;
+                        tarjeta.appendChild(precio);
+                        if (item.created_at) {
+                            const fecha = document.createElement('p');
+                            fecha.className = 'fecha';
+                            fecha.textContent = new Date(item.created_at.replace(' ', 'T') + 'Z').toLocaleString('es-SV');
+                            tarjeta.appendChild(fecha);
+                        }
+                        if (item.attended) {
+                            const atendido = document.createElement('p');
+                            atendido.textContent = 'Consulta atendida';
+                            tarjeta.appendChild(atendido);
+                        } else {
+                            const accion = document.createElement('div');
+                            accion.className = 'acciones';
+                            const boton = document.createElement('button');
+                            boton.type = 'button';
+                            boton.className = 'boton';
+                            boton.textContent = 'Marcar como atendida';
+                            boton.addEventListener('click', async () => {
+                                boton.disabled = true;
+                                try {
+                                    const respuestaAtendida = await fetch(`/api/messages/${encodeURIComponent(item.id)}/attended`, { method: 'POST', credentials: 'same-origin' });
+                                    if (!respuestaAtendida.ok) throw new Error('No se pudo actualizar la consulta.');
+                                    await cargarMensajes();
+                                } catch (error) {
+                                    boton.disabled = false;
+                                    mostrarError('No se pudo marcar la consulta como atendida. Int\u00e9ntalo de nuevo.');
+                                }
+                            });
+                            accion.appendChild(boton);
+                            tarjeta.appendChild(accion);
+                        }
+                        const botonEliminar = document.createElement('button');
+                        botonEliminar.type = 'button';
+                        botonEliminar.className = 'boton eliminar';
+                        botonEliminar.textContent = 'Eliminar mensaje';
+                        botonEliminar.addEventListener('click', async () => {
+                            if (!window.confirm(`¿Eliminar el mensaje sobre "${item.product || 'este producto'}"?`)) return;
+                            botonEliminar.disabled = true;
+                            try {
+                                const respuestaEliminar = await fetch(`/api/messages/${encodeURIComponent(item.id)}`, { method: 'DELETE', credentials: 'same-origin' });
+                                if (!respuestaEliminar.ok) throw new Error('No se pudo eliminar el mensaje.');
+                                await cargarMensajes();
+                            } catch (error) {
+                                botonEliminar.disabled = false;
+                                mostrarError('No se pudo eliminar el mensaje. Inténtalo de nuevo.');
+                            }
+                        });
+                        const contenedorEliminar = tarjeta.querySelector('.acciones');
+                        if (contenedorEliminar) contenedorEliminar.appendChild(botonEliminar);
+                        else tarjeta.appendChild(botonEliminar);
+                        listaMensajes.appendChild(tarjeta);
+                    });
+                } catch (error) {
+                    mostrarError('No se pudieron cargar las consultas. Verifica que el servidor est&eacute; iniciado.');
+                }
+            }
+
+            btnActualizar.addEventListener('click', cargarMensajes);
+            await cargarMensajes();
+            window.setInterval(cargarMensajes, 20000);
+        });
+
+        // "Salir": cierra la página o la aplicación si el usuario lo confirma.
+        function salirApp(event) {
+            if (event) event.preventDefault();
+            if (!confirm('¿Seguro que quieres salir?')) return;
+            try {
+                if (window.AndroidSalir && typeof window.AndroidSalir.salir === 'function') {
+                    window.AndroidSalir.salir();
+                    return;
+                }
+            } catch (error) {
+                // La interfaz nativa no está disponible (navegador de escritorio).
+            }
+            window.close();
+        }
+    </script>
+</body>
+</html>
